@@ -1,10 +1,13 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Button } from 'react-native'
+import CreateAlert from '../Screens/CreateAlertScreen'
 
-function HomeScreen() {
+
+function Home({navigation}) {
     return (
         <View style={styles.container}>
             <Text>HomeScreen</Text>
+            <Button title ="Create Alert" onPress={() => navigation.navigate(CreateAlert)}/>
         </View>
         
     )
@@ -19,4 +22,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default HomeScreen
+export default Home

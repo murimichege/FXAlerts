@@ -1,7 +1,7 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View , StyleSheet, Text} from 'react-native'
 
-function CreateAlertScreen() {
+function CreateAlert() {
     return (
        < View style={styles.container}>
             <Text>CreateAlertScreen</Text>
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
 
 
 })
-export default CreateAlertScreen
+export default CreateAlert
