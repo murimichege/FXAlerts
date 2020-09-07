@@ -1,9 +1,9 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-function Alerts() {
+function AlertScreen() {
     return (
-      <View>
+      <View style={styles.container}>
           <Text>
               AlertScreen
           </Text>
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Alerts
+export default AlertScreen

@@ -6,26 +6,26 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons';
 
 //Screen imports
-import Home from '../Navigation/Screens/HomeScreen'
-import Alerts from '../Navigation/Screens/AlertScreen'
-import CreateAlert from '../Navigation/Screens/CreateAlertScreen'
-import LogIn from '../Navigation/Screens/LogInScreen'
-import SignUp from '../Navigation/Screens/SignUpScreen'
+import LoadingScreen from './Screens/LoadingScreen'
+import HomeScreen from './Screens/HomeScreen'
+import AlertScreen from './Screens/AlertScreen'
+import CreateAlertScreen from './Screens/CreateAlertScreen'
+import LogInScreen from './Screens/LogInScreen'
 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
 const MainStackNavigation = () => {
     return (
+          
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={Home}>
-            <Stack.Screen name="Home" component={MainTabNavigator} />
-            <Stack.Screen name="AlertScreen" component={Alerts} />
-            <Stack.Screen name="CreateAlert" component={CreateAlert} />
-            <Stack.Screen name="Login" component={LogIn}/>
-            <Stack.Screen name="SignUp" component={SignUp}/>
+          <Stack.Navigator>
+          <Stack.Screen name="LogInScreen" component={LogInScreen }/>
+           <Stack.Screen name="LoadingScreen" component={LoadingScreen}/>        
+            <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+            <Stack.Screen name="AlertScreen" component={AlertScreen} />
+            <Stack.Screen name="CreateAlert" component={CreateAlertScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       );
@@ -33,19 +33,19 @@ const MainStackNavigation = () => {
 }
 
 
-function MainTabNavigator() {
+/*function MainTabNavigator() {
   return (
         <Tab.Navigator 
         screenOptions={({ route }) => ({
             tabBarIcon: ({focused, color, size}) =>
             {
                 let iconName;
-                if(route.name == 'Home'){
+                if(route.name == 'HomeScreen'){
                     iconName = focused
                     ? 'ios-home'
                     : 'ios-home';
                 }
-                else if(route.name = 'Alerts'){
+                else if(route.name = 'AlertScreen'){
                     iconName = focused ? 'ios-list-box' : 'ios-list';
                 }
                 return <Ionicons name={iconName} size={size} color={color} />;
@@ -58,10 +58,10 @@ function MainTabNavigator() {
         inactiveTintColor: 'gray',
       }}
         >
-            <Tab.Screen name = 'Home' component={Home}/>
-            <Tab.Screen name = 'Alerts' component={Alerts}/>
+            <Tab.Screen name = 'HomeScreen' component={HomeScreen}/>
+            <Tab.Screen name = 'AlertScreen' component={AlertScreen}/>
         </Tab.Navigator>
 
   );
-}
+}*/
 export default MainStackNavigation
