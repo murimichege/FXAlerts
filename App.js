@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 import MainStackNavigation from './src/Navigation/MainNavigator'
-export default function App() {
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Setting a timer']);
+function App() {
   return (
-    
     <MainStackNavigation/>
-    
-
-  );
+  )
 }
 
+export default App

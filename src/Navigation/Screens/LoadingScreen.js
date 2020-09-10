@@ -1,46 +1,43 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {View, ActivityIndicator, Text, StyleSheet} from 'react-native'
-import firebase from 'firebase'
-
-
+import {firebase} from '../../firebase/config'
 
 const LoadingScreen = ({navigation}) => {
 
-    useEffect(() =>{
+   useEffect(() => {
+     checkIfLoggedIn = () =>{
         firebase.auth().onAuthStateChanged(
             user => {
                 if(user){
                     navigation.navigate('HomeScreen')
-                }
-                else{
+                }else{
+                  
                     navigation.navigate('LogInScreen')
                 }
             }
         )
-    },[])
 
-    /*const checkIfLoggedIn = () => {
-        firebase.auth().onAuthStateChanged(
-           function(user) {
-                if(user){
-                    props.navigation.navigate('HomeScreen');
+     }
+            
+       
+       checkIfLoggedIn() 
+    }, [])
+    
 
-                }
-                else{
-                    props.navigation.navigate('LogInScreen');
-                }
-            }
-        )
-    }*/
+    
+  
     return (
         <View style={styles.container}>
             <Text>
-                <ActivityIndicator size="large"/>
-            </Text>
+                Load</Text>            
         </View>
         
     );
 }
+
+
+
+export default LoadingScreen
 
 const styles = StyleSheet.create({
     container: {
@@ -49,5 +46,3 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     }
 })
-
-export default LoadingScreen
