@@ -1,18 +1,18 @@
-import React, {useEffect,useState} from 'react';
-import { View, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import LogInScreen from '../Navigation/Screens/LogInScreen'
-import HomeScreen from '../Navigation/Screens/HomeScreen'
-import CreateAlertScreen from '../Navigation/Screens/CreateAlertScreen'
-import AlertScreen from '../Navigation/Screens/AlertScreen'
-import LoadingScreen from '../Navigation/Screens/LoadingScreen' 
-import {firebase} from '../firebase/config'
+import 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react'
+import { firebase } from '../firebase/config'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import LogInScreen from './screens/LoginScreen/LogInScreen'
+import CreateAlertScreen from '../Navigation/screens/CreateAlertScreen/CreateAlertScreen'
+import HomeScreen from '../Navigation/screens/HomeScreen/HomeScreen'
+import RegistrationScreen from '../Navigation/screens/RegistrationScreen/RegistrationScreen'
+import AlertScreen from '../Navigation/screens/AlertScreen/AlertScreen'
 
-const Stack = createStackNavigator()
 
-export default function(){
+const Stack = createStackNavigator();
+
+export default function MainStackNavigation(){
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
@@ -37,72 +37,31 @@ export default function(){
       }
     });
   }, []);
+
   if (loading) {
     return (
       <></>
     )
   }
 
-  return(
+  return (
     <NavigationContainer>
-      <Stack.Navigator >
-      { user ? (
-        <>
-          <Stack.Screen name="HomeScreen">
+      <Stack.Navigator>
+        { user ? (
+          <>
+          <Stack.Screen name="Home">
             {props => <HomeScreen {...props} extraData={user} />}
           </Stack.Screen>
-          <Stack.Screen name="AlertsScreen" component={AlertScreen}/>
-        <Stack.Screen name="CreateAlertScreen" component={CreateAlertScreen}/>
-          </>
+         <Stack.Screen name="CreateAlertScreen" component={CreateAlertScreen}/>
+         <Stack.Screen name="AlertScreen" component={AlertScreen}/>
+</>
         ) : (
           <>
-           <Stack.Screen name="LogInScreen" component={LogInScreen}/>
-      <Stack.Screen name="LoadingScreen" component={LoadingScreen}/>
+            <Stack.Screen name="Login" component={LogInScreen} />
+            <Stack.Screen name="Registration" component={RegistrationScreen} />
           </>
         )}
-
-        
-      
-     </Stack.Navigator>
+      </Stack.Navigator>
     </NavigationContainer>
-
   );
 }
-
-
-        
-       
-
-/*const Tab = createBottomTabNavigator();
-
-function MainTabNavigator() {
-  return (
-        <Tab.Navigator 
-        screenOptions={({ route }) => ({
-            tabBarIcon: ({focused, color, size}) =>
-            {
-                let iconName;
-                if(route.name == 'Home'){
-                    iconName = focused
-                    ? 'ios-home'
-                    : 'ios-home';
-                }
-                else if(route.name = 'Settings'){
-                    iconName = focused ? 'ios-list-box' : 'ios-list';
-                }
-                return <Ionicons name={iconName} size={size} color={color} />;
-            },
-
-        })
-    }
-    tabBarOptions={{
-        activeTintColor: 'blue',
-        inactiveTintColor: 'gray',
-      }}
-        >
-            <Tab.Screen name = 'HomeScreen' component={HomeScreen}/>
-            <Tab.Screen name = 'AlertScreen' component={AlertScreen}/>
-        </Tab.Navigator>
-
-  );
-}*/
