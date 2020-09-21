@@ -32,7 +32,7 @@ return (
                 Welcome
             </Text>
             <Button title="Sign Out" type="outline" onPress ={() => firebase.auth().signOut()}/>
-            <Button title="My Alerts"  onPress ={() =>navigation.navigate("AlertsScreen") }/>
+            <Button title="My Alerts"  onPress ={() =>navigation.navigate("AlertScreen") }/>
             
         </Card>
   

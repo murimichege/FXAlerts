@@ -1,11 +1,17 @@
 import React from 'react'
 import {Text, View} from 'react-native'
-export default function AlertScreen() {
+import {Card} from 'react-native-elements'
+export default function AlertScreen({route}) {
+
+    const {alert} = route.params
     return (
         <View>
-            <Text>
-                AlertScreen
-            </Text>
+           <Card>
+               <Text>
+                   {alert}
+               </Text>
+
+           </Card>
         </View>
     )
 }
