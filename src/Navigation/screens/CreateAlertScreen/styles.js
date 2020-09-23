@@ -30,4 +30,10 @@ export default StyleSheet.create({
         fontSize: 10,
         fontWeight: 'bold',
     },
+    textInputStyle: {
+        width: 280,
+        backgroundColor: 'lightgrey',
+        padding: 4,
+        borderRadius: 5
+      },
 })

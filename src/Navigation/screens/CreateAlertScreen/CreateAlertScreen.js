@@ -12,12 +12,18 @@ const CreateAlertScreen =({route, navigation})=> {
     const {BidPrice} = route.params
     const {AskPrice} = route.params
 
+    //useRef to focus on the current price o
   
 
-    const [selectedValue, setSelectedValue] = useState("Bid");
+    const [price, setPrice] = useState("Bid");
     const [notification, setNotification] = useState("email")
     const [message, setMessage] = useState(null)
 
+    // function for checking condition
+
+    const checkPrices = () => {
+        
+    }
     return (
         <View style={styles.container}>
              <KeyboardAwareScrollView
@@ -35,17 +41,14 @@ const CreateAlertScreen =({route, navigation})=> {
                 <Text style={{textAlign: "center"}}>
                     Alert When : 
                 </Text>
-                
 
-                <Picker
-        selectedValue={selectedValue}
-        style={{ height: 50, width: 150 }}
-        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-      >
-        <Picker.Item label="bid" value="Bid" />
-        <Picker.Item label="ask" value="Ask" />
-      </Picker>
-
+                <TextInput
+          style={styles.textInputStyle}
+          placeholder="Price"
+          placeholderTextColor="#60605e"
+          numeric
+          keyboardType='decimal-pad'	
+        />
                 <Card.Divider/>
                 <Text style={{textAlign:"center", fontWeight: "bold"}}>
                     Receive Alert via :
