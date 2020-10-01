@@ -11,7 +11,8 @@ export default StyleSheet.create({
         backgroundColor: '#788eec',
         width: 80,
         alignItems: "center",
-        justifyContent: 'center',
+        justifyContent: "center",
+    
 
     },
     input: {
@@ -36,4 +37,13 @@ export default StyleSheet.create({
         padding: 4,
         borderRadius: 5
       },
+      header: {
+
+      },
+      panelHeader: {
+
+      },
+      panelHandle: {
+          
+      }
 })

@@ -1,31 +1,21 @@
-import React, {useState} from 'react'
-import { View, Text,TextInput, StyleSheet, Picker, TouchableOpacity } from 'react-native'
+import React, {useRef, useState} from 'react'
+import { View, Text,TextInput, StyleSheet, Picker, TouchableOpacity, Button, PushNotificationIOS } from 'react-native'
 import {Card, CheckBox } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import BottomSheet from 'reanimated-bottom-sheet';
+import Animated from 'react-native-reanimated';
 
-//import {Picker} from '@react-native-community/picker';
 import styles from './styles'
-const CreateAlertScreen =({route, navigation})=> {
+import HomeScreen from '../HomeScreen/HomeScreen';
+const CreateAlertScreen =({route, navigation, user})=> {
 
-    // passed routes as parameters
-    const {instrumentname} = route.params
-    const {BidPrice} = route.params
-    const {AskPrice} = route.params
-
-    //useRef to focus on the current price o
-  
-
-    const [price, setPrice] = useState("Bid");
-    const [notification, setNotification] = useState("email")
+    
+// hook for the message textinput
     const [message, setMessage] = useState(null)
 
-    // function for checking condition
-
-    const checkPrices = () => {
-        
-    }
     return (
         <View style={styles.container}>
+            
              <KeyboardAwareScrollView
                 style={{ flex: 1, width: '100%' }}
                 keyboardShouldPersistTaps="always">
@@ -49,18 +39,7 @@ const CreateAlertScreen =({route, navigation})=> {
           numeric
           keyboardType='decimal-pad'	
         />
-                <Card.Divider/>
-                <Text style={{textAlign:"center", fontWeight: "bold"}}>
-                    Receive Alert via :
-                </Text>
-                <Picker
-                selectedValue={notification}
-                onValueChange={(itemValue,itemIndex) => setNotification(itemValue)}
-                style={{height: 50, width: 100}}>
-                    <Picker.Item  label="SMS" value ="sms"/>
-                    <Picker.Item label="Email" value="email"/>
-                    <Picker.Item label="Push_Notification" value="pushnotification"/>
-                </Picker>
+                <Card.Divider/> 
 
                 <TextInput
                 value={message}
@@ -77,8 +56,7 @@ const CreateAlertScreen =({route, navigation})=> {
                 </TouchableOpacity>
                 
 
-              
-
+            
         </Card>
         </KeyboardAwareScrollView>
         </View>
