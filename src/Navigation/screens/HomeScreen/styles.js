@@ -31,26 +31,37 @@ export default StyleSheet.create({
         height: 47,
         borderRadius: 5,
         backgroundColor: '#788eec',
-        width: 80,
+        width: 100,
         alignItems: "center",
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginRight: 20,
+        marginTop: 20
     },
     buttonText: {
         color: 'white',
         fontSize: 16
     },
-    listContainer: {
-        marginTop: 20,
-        padding: 20,
+    textInputStyle: {
+        borderColor: 'transparent',
+        elevation: 1,
+        height: 40,
+        width: 80,
+        justifyContent: "space-between",
+        paddingLeft: 15,
+        backgroundColor: 'lightgrey',
+        padding: 4,
+        borderRadius: 5
+
+    
     },
-    entityContainer: {
-        marginTop: 16,
-        borderBottomColor: '#cccccc',
+      modal: {
+          alignItems: "center"
+      },
+      inputWrap : {
+        borderColor: "#cccccc",
         borderBottomWidth: 1,
-        paddingBottom: 16
-    },
-    entityText: {
-        fontSize: 20,
-        color: '#333333'
-    }
+        marginBottom: 10
+      },
+
+    
 })

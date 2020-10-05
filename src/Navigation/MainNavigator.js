@@ -4,10 +4,11 @@ import { firebase } from '../firebase/config'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import LogInScreen from './screens/LoginScreen/LogInScreen'
-import CreateAlertScreen from '../Navigation/screens/CreateAlertScreen/CreateAlertScreen'
+import CreateAlertScreen from './screens/CreateAlertScreen/CreateAlertModal'
 import HomeScreen from '../Navigation/screens/HomeScreen/HomeScreen'
 import RegistrationScreen from '../Navigation/screens/RegistrationScreen/RegistrationScreen'
 import AlertScreen from '../Navigation/screens/AlertScreen/AlertScreen'
+import CreateAlertModal from './screens/CreateAlertScreen/CreateAlertModal';
 
 
 const Stack = createStackNavigator();
@@ -52,8 +53,8 @@ export default function MainStackNavigation(){
           <Stack.Screen name="Home">
             {props => <HomeScreen {...props} extraData={user} />}
           </Stack.Screen>
-         <Stack.Screen name="CreateAlertScreen" component={CreateAlertScreen}/>
          <Stack.Screen name="AlertScreen" component={AlertScreen}/>
+         
 </>
         ) : (
           <>
