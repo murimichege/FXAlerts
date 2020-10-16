@@ -8,6 +8,7 @@ export default function RegistrationScreen({navigation}) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [phonenumber, setPhoneNumber] = useState('')
 
     const onFooterLinkPress = () => {
         navigation.navigate('Login')
@@ -26,8 +27,10 @@ export default function RegistrationScreen({navigation}) {
                 const uid = response.user.uid
                 const data = {
                     id: uid,
-                    email,
-                    fullName,
+                    user_email: email,
+                    user_fullname:fullName,
+                    user_phonenumber: phonenumber,
+                    user_password: password
                 };
                 const usersRef = firebase.firestore().collection('users')
                 usersRef
@@ -59,6 +62,7 @@ export default function RegistrationScreen({navigation}) {
                     value={fullName}
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"
+                    keyboardType="numbers-and-punctuation"
                 />
                 <TextInput
                     style={styles.input}
@@ -68,6 +72,17 @@ export default function RegistrationScreen({navigation}) {
                     value={email}
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"
+                    keyboardType="email-address"
+                />
+                <TextInput
+                style={styles.input}
+                placeholder="Phone number  +254"
+                placeholderTextColor="#aaaaaa"
+                value={phonenumber}
+                onChangeText={(value) => setPhoneNumber(value)}            
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                keyboardType="phone-pad"
                 />
                 <TextInput
                     style={styles.input}

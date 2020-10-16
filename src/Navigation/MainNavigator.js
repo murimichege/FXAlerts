@@ -58,8 +58,8 @@ export default function MainStackNavigation(){
 </>
         ) : (
           <>
-            <Stack.Screen name="Login" component={LogInScreen} />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
+            <Stack.Screen name="LogInScreen" component={LogInScreen} />
+            <Stack.Screen name="RegistrationScreen" component={RegistrationScreen} />
           </>
         )}
       </Stack.Navigator>

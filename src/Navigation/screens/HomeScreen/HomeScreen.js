@@ -1,28 +1,101 @@
-import React, {useContext, useState} from 'react'
-import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroid, Picker } from 'react-native'
+import React, {useContext, useState, useEffect} from 'react'
+import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroid,CheckBox, Alert } from 'react-native'
 import {ListItem, Card, Button, Icon} from 'react-native-elements'
-import {ActionSheet} from 'native-base'
+import { StackActions } from '@react-navigation/native';
+
+import { AsyncStorage } from 'react-native';
+
 //import CurrencyPair from '../../CurrencyPair'
 import {firebase} from '../../../firebase/config'
 import {CurrencyContext} from '../../../context/Context'
 import styles from '../HomeScreen/styles'
 
-var BUTTONS = [
-  { text: "SMS", icon: "chatboxes", iconColor: "#2c8ef4" },
-  { text: "Email", icon: "analytics", iconColor: "#f42ced" },
-  { text: "Push Notification", icon: "aperture", iconColor: "#ea943b" },
-  { text: "Delete", icon: "trash", iconColor: "#fa213b" },
-  { text: "Cancel", icon: "close", iconColor: "#25de5b" }
-];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
 
-function HomeScreen({navigation, props}) {
+
+function HomeScreen(navigation, props) {
 
     const currency = useContext(CurrencyContext);
+    //hook for the modal
     const [modalopen, setModalOpen] = useState(false)
+//hook for the clicked currency pair
     const [clickedindex, setClickedIndex]  = useState(0)
-   const[sheet, setSheet] = useState(null)
+//hook for the actionsheet
+const [email, setemail] = useState(false);
+const [sms, setSMS] = useState(false)
+const [pushNotification, setPushNotification] = useState(false)
+//Hooks for the alert inputs
+   const [pricealert, setPricealert] = useState('')
+   const [alertMessage, setalertMessage] = useState('')
+
+   //hook for alerts array
+   const [alertsList, setAlertsList] = useState([])
+   const userID = props.extraData.id
+
+// function for posting an alert to firebase
+function addAlert() {
+  const CurrencyPair =  {...currency.data.prices[clickedindex].instrument}
+const timeStamp = firebase.firestore.FieldValue.serverTimestamp()
+
+  firebase.firestore()
+  .collection("Alerts")
+  .add({
+    alert_Message: alertMessage,
+    alert_Currency_Pair: CurrencyPair,
+    alert_Timestamp: timeStamp, 
+    alert_user_id : userID
+  })
+  .then((data) => addAlert(data))
+  .catch((error) => {
+    console.log(error)
+  })
+}
+
+
+
+
+// function for getting alerts from firebase
+useEffect(() => {
+  firebase.firestore().collection("Alerts")
+  .where(" alert_user_id ", "==", userID)
+  .orderBy("alert_Timestamp")
+  .onSnapshot(querySnapshot=>{
+
+    const AlertEntities = []
+    querySnapshot.forEach(doc => {
+      const entity = doc.data()
+      entity.id = doc.id
+      AlertEntities.push(entity)
+    })
+    setAlertsList(AlertEntities)
+  },
+  error => {
+console.log(error)
+  }
+  )
+
+
+
+},[])
+ 
+
+
+ async function logOut() {
+   try {
+    await firebase.auth().signOut();
+    navigation.dispatch(
+      StackActions.popToTop()
+    );
+      
+     
+   } catch (error) {
+     console.log(error)
+   }
+
+  
+  }
+
+
+
 
     //toast method that will be called when the ok button is called
     const showToastWithGravityAndOffset = () => {
@@ -34,6 +107,7 @@ function HomeScreen({navigation, props}) {
         50
       );
     };
+  
 return (
         <ScrollView>
           <Modal
@@ -42,75 +116,87 @@ return (
           >
             <View style={styles.modal}>
               <View>
+                <Icon name="close" onPress={() =>setModalOpen(false)} />                
                 <Text style={{textAlign: "center", fontWeight: "bold"}}>
                {currency.data.prices[clickedindex].instrument}
               </Text>
               <Text style={{textAlign: "center"}}>
               {currency.data.prices[clickedindex].closeoutAsk}/{currency.data.prices[clickedindex].closeoutBid}
               </Text>
+              
               <Card.Divider/>
 
               <View style={{ flexDirection: "row"}}>
                 <View style={styles.inputWrap}>
-                <Text>
-                      AskPrice
-                    </Text>
-                    <TextInput
-          style={styles.textInputStyle}
-          placeholder="Price"
-          placeholderTextColor="#60605e"
-          numeric
-          keyboardType='decimal-pad'	
-        />
+
+                
+                  <TextInput
+                  style={styles.textInputStyle}
+                  value={pricealert}
+                  onChangeText = {(pricealert) => setPricealert(pricealert)}
+                  placeholder="Alert Price"
+                  placeholderTextColor="#60605e"
+                  numeric
+                  keyboardType='decimal-pad'	
+                />
+
+
+                  <TextInput
+                  style={styles.messageStyle}
+                  value={alertMessage}
+                  onChangeText = {(alertMessage) => setalertMessage(alertMessage)}
+                  placeholder="Alert Message"
+                  placeholderTextColor="#60605e"
+                />
                 </View>
                 <View style={styles.inputWrap}>
-                <Text>
-          Bid Price
-        </Text>
-        <TextInput
-          style={styles.textInputStyle}
-          placeholder="Price"
-          placeholderTextColor="#60605e"
-          numeric
-          keyboardType='decimal-pad'	
+                  </View>
+              </View>   
+              <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={sms}
+          onValueChange={setSMS}
+          style={styles.checkbox}
         />
+        <Text>SMS</Text>
+        </View>
+        <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={email}
+          onValueChange={setemail}
+          style={styles.checkbox}
+        />
+        <Text>Email</Text>
+        </View>
+        <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={pushNotification}
+          onValueChange={setPushNotification}
+          style={styles.checkbox}
+        />
+        <Text>Push Notification</Text>
+        </View>
 
-
-                </View>
-
-              </View>
-             
-                    
-
-       
-                
-          <TouchableOpacity 
-          onPress={() =>
-            ActionSheet.show(
-              {
-                options: BUTTONS,
-                cancelButtonIndex: CANCEL_INDEX,
-                destructiveButtonIndex: DESTRUCTIVE_INDEX,
-                title: "How do you want to receive your notification"
-              },
-              buttonIndex => {
-                setSheet({ clicked: BUTTONS[buttonIndex] });
-              }
-            )}
-            style={styles.button}
-          >
-            <Text>ActionSheet</Text>
-          </TouchableOpacity>
-
-
-
-
-
-                   
+         
               <TouchableOpacity style={styles.button}
-               onPress={() => {setModalOpen(false);showToastWithGravityAndOffset();} }>
-                <Text style={styles.buttonTitle}>OK</Text>
+               onPress={() => {
+                 if(pricealert.length < 7 || pricealert.length > 7){
+                   Alert.alert("Error", "Input a valid price")
+                   return ;
+                 }
+                 if(alertMessage.length === 0)
+                 {
+                   Alert.alert("Incomplete", "Enter your Alert Message")
+                   return ;
+                 }
+                  addAlert();
+                  setModalOpen(false);
+                  showToastWithGravityAndOffset();} }
+                  >
+                   <Text style={styles.buttonTitle}>OK</Text>
+                   
               </TouchableOpacity>
+             
               </View>
             </View>
           </Modal>
@@ -118,7 +204,7 @@ return (
             <Text style={{textAlign: "center"}}>
                 Welcome
             </Text>
-            <Button title="Sign Out" type="outline" onPress ={() => firebase.auth().signOut()}/>
+            <Button title="Sign Out" type="outline" onPress ={() => logOut()}/>
             <Button title="My Alerts"  onPress ={() =>navigation.navigate("AlertScreen") }/>
             
         </Card>
@@ -132,7 +218,6 @@ return (
         bottomDivider>
         <ListItem.Content>
             <ListItem.Title>
-              
             {currency.data.prices[index].instrument}        {currency.data.prices[index].closeoutAsk}         {currency.data.prices[index].closeoutBid}
             </ListItem.Title>
         </ListItem.Content>
@@ -141,7 +226,6 @@ return (
             })
 }
         </View>
-   
     </ScrollView>
 )
 }

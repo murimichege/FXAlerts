@@ -5,6 +5,7 @@ export default StyleSheet.create({
         flex: 1,
         alignItems: 'center'
     },
+   
     formContainer: {
         flexDirection: 'row',
         height: 80,
@@ -45,8 +46,8 @@ export default StyleSheet.create({
         borderColor: 'transparent',
         elevation: 1,
         height: 40,
-        width: 80,
-        justifyContent: "space-between",
+        width: 100,
+        justifyContent: "flex-start",
         paddingLeft: 15,
         backgroundColor: 'lightgrey',
         padding: 4,
@@ -54,6 +55,30 @@ export default StyleSheet.create({
 
     
     },
+    messageStyle: {
+        borderColor: 'transparent',
+        justifyContent: "center",
+        elevation: 1,
+        height: 100,
+        width: 200,
+        justifyContent: "space-between",
+        paddingLeft: 15,
+        backgroundColor: 'lightgrey',
+        padding: 4,
+        borderRadius: 5,
+        marginTop: 10
+
+    },
+    checkboxContainer: {
+        flexDirection: "row",
+        marginBottom: 20,
+      },
+      checkbox: {
+        alignSelf: "center",
+      },
+      label: {
+        margin: 8,
+      },
       modal: {
           alignItems: "center"
       },

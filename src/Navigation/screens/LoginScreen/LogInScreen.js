@@ -8,7 +8,7 @@ export default function LogInScreen({navigation}) {
     const [password, setPassword] = useState('')
 
     const onFooterLinkPress = () => {
-        navigation.navigate('Registration')
+        navigation.navigate('RegistrationScreen')
     }
 
     const onLoginPress = () => {
@@ -52,6 +52,7 @@ export default function LogInScreen({navigation}) {
                     value={email}
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"
+                    keyboardType="email-address"
                 />
                 <TextInput
                     style={styles.input}
@@ -62,6 +63,7 @@ export default function LogInScreen({navigation}) {
                     value={password}
                     underlineColorAndroid="transparent"
                     autoCapitalize="none"
+                    
                 />
                 <TouchableOpacity
                     style={styles.button}
