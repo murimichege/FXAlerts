@@ -6,6 +6,7 @@ const credentials = {
     username: 'EddieChege',
 }
 
+
 // Initialize the SDK
 const AfricasTalking = require('africastalking')(credentials);
 

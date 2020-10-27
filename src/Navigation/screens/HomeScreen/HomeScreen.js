@@ -12,39 +12,44 @@ import styles from '../HomeScreen/styles'
 
 
 
-function HomeScreen(navigation, props) {
+function HomeScreen({navigation, props}) {
 
     const currency = useContext(CurrencyContext);
     //hook for the modal
     const [modalopen, setModalOpen] = useState(false)
 //hook for the clicked currency pair
     const [clickedindex, setClickedIndex]  = useState(0)
-//hook for the actionsheet
-const [email, setemail] = useState(false);
-const [sms, setSMS] = useState(false)
-const [pushNotification, setPushNotification] = useState(false)
+
 //Hooks for the alert inputs
    const [pricealert, setPricealert] = useState('')
    const [alertMessage, setalertMessage] = useState('')
+   const [alerts, setAlerts] = useState([])
 
-   //hook for alerts array
-   const [alertsList, setAlertsList] = useState([])
-   const userID = props.extraData.id
+   
 
 // function for posting an alert to firebase
 function addAlert() {
-  const CurrencyPair =  {...currency.data.prices[clickedindex].instrument}
-const timeStamp = firebase.firestore.FieldValue.serverTimestamp()
 
-  firebase.firestore()
-  .collection("Alerts")
-  .add({
+const CurrencyPair =  {...currency.data.prices[clickedindex].instrument}
+const askPrice = {...currency.data.prices[clickedindex].closeoutAsk}
+const bidPrice = {...currency.data.prices[clickedindex].closeoutAsk}
+const instrument = CurrencyPair
+const timeStamp = firebase.firestore.FieldValue.serverTimestamp()
+const newDocRef = firebase.firestore().collection("Alerts").doc()
+const userId = firebase.auth().currentUser.uid
+
+  newDocRef.set({
+    alert_id: newDocRef.id,
+    
+    alert_User_id : userId,
+    alert_Current_AskPrice: askPrice,
+    alert_Current_BidPrice: bidPrice,
     alert_Message: alertMessage,
-    alert_Currency_Pair: CurrencyPair,
-    alert_Timestamp: timeStamp, 
-    alert_user_id : userID
+    alert_Currency_Pair:{ instrument: instrument},
+    alert_Timestamp: timeStamp,
+    alert_Price: pricealert
   })
-  .then((data) => addAlert(data))
+
   .catch((error) => {
     console.log(error)
   })
@@ -52,51 +57,29 @@ const timeStamp = firebase.firestore.FieldValue.serverTimestamp()
 
 
 
-
-// function for getting alerts from firebase
-useEffect(() => {
-  firebase.firestore().collection("Alerts")
-  .where(" alert_user_id ", "==", userID)
-  .orderBy("alert_Timestamp")
-  .onSnapshot(querySnapshot=>{
-
-    const AlertEntities = []
-    querySnapshot.forEach(doc => {
-      const entity = doc.data()
-      entity.id = doc.id
-      AlertEntities.push(entity)
-    })
-    setAlertsList(AlertEntities)
-  },
-  error => {
-console.log(error)
-  }
-  )
-
-
-
-},[])
- 
-
-
  async function logOut() {
    try {
     await firebase.auth().signOut();
     navigation.dispatch(
       StackActions.popToTop()
-    );
-      
-     
+    );   
    } catch (error) {
      console.log(error)
    }
-
-  
   }
 
+  function checkCondition() {
+    const askPrice = {...currency.data.prices[clickedindex].closeoutAsk}
+    const bidPrice = {...currency.data.prices[clickedindex].closeoutBid}
+    const MarketPrice = (askPrice + bidPrice )/2
 
+    
+    while(MarketPrice === pricealert || MarketPrice === pricealert)
+    {
+      Alert.alert("Price Alert", alertMessage)
 
-
+    }
+  }
     //toast method that will be called when the ok button is called
     const showToastWithGravityAndOffset = () => {
       ToastAndroid.showWithGravityAndOffset(
@@ -133,7 +116,7 @@ return (
                   <TextInput
                   style={styles.textInputStyle}
                   value={pricealert}
-                  onChangeText = {(pricealert) => setPricealert(pricealert)}
+                  onChangeText = {(text) => setPricealert(text)}
                   placeholder="Alert Price"
                   placeholderTextColor="#60605e"
                   numeric
@@ -144,7 +127,7 @@ return (
                   <TextInput
                   style={styles.messageStyle}
                   value={alertMessage}
-                  onChangeText = {(alertMessage) => setalertMessage(alertMessage)}
+                  onChangeText = {(text) => setalertMessage(text)}
                   placeholder="Alert Message"
                   placeholderTextColor="#60605e"
                 />
@@ -152,30 +135,7 @@ return (
                 <View style={styles.inputWrap}>
                   </View>
               </View>   
-              <View style={styles.checkboxContainer}>
-        <CheckBox
-          value={sms}
-          onValueChange={setSMS}
-          style={styles.checkbox}
-        />
-        <Text>SMS</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-        <CheckBox
-          value={email}
-          onValueChange={setemail}
-          style={styles.checkbox}
-        />
-        <Text>Email</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-        <CheckBox
-          value={pushNotification}
-          onValueChange={setPushNotification}
-          style={styles.checkbox}
-        />
-        <Text>Push Notification</Text>
-        </View>
+        
 
          
               <TouchableOpacity style={styles.button}
@@ -190,6 +150,7 @@ return (
                    return ;
                  }
                   addAlert();
+                  checkCondition();
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >
