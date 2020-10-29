@@ -28,10 +28,9 @@ export default function AlertScreen() {
                     <ListItem key={i} bottomDivider>
                 <ListItem.Content>
                     <ListItem.Title>
-                        
+                        {l.alert_Currency_Pair}
                     </ListItem.Title>
                     <ListItem.Subtitle>
-
                     Alert Price: {l. alert_Price}
                     <Icon name="delete"/>
 

@@ -8,7 +8,7 @@ import CreateAlertScreen from './screens/CreateAlertScreen/CreateAlertModal'
 import HomeScreen from '../Navigation/screens/HomeScreen/HomeScreen'
 import RegistrationScreen from '../Navigation/screens/RegistrationScreen/RegistrationScreen'
 import AlertScreen from '../Navigation/screens/AlertScreen/AlertScreen'
-import CreateAlertModal from './screens/CreateAlertScreen/CreateAlertModal';
+
 
 
 const Stack = createStackNavigator();

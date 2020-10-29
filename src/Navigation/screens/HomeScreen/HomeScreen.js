@@ -12,7 +12,7 @@ import styles from '../HomeScreen/styles'
 
 
 
-function HomeScreen({navigation, props}) {
+function HomeScreen({navigation}) {
 
     const currency = useContext(CurrencyContext);
     //hook for the modal
@@ -21,23 +21,20 @@ function HomeScreen({navigation, props}) {
     const [clickedindex, setClickedIndex]  = useState(0)
 
 //Hooks for the alert inputs
-   const [pricealert, setPricealert] = useState('')
+   const [alertPrice, setAlertPrice] = useState('')
    const [alertMessage, setalertMessage] = useState('')
+   //Hook for storng the price alerts
    const [alerts, setAlerts] = useState([])
-
-   
 
 // function for posting an alert to firebase
 function addAlert() {
+  let askPrice = ([...currency.data.prices[clickedindex].closeoutAsk].join('').toString())
+  let bidPrice =( [...currency.data.prices[clickedindex].closeoutBid].join('').toString())
+  let CurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
+let timeStamp = firebase.firestore.FieldValue.serverTimestamp()
+let newDocRef = firebase.firestore().collection("Alerts").doc()
 
-const CurrencyPair =  {...currency.data.prices[clickedindex].instrument}
-const askPrice = {...currency.data.prices[clickedindex].closeoutAsk}
-const bidPrice = {...currency.data.prices[clickedindex].closeoutAsk}
-const instrument = CurrencyPair
-const timeStamp = firebase.firestore.FieldValue.serverTimestamp()
-const newDocRef = firebase.firestore().collection("Alerts").doc()
 const userId = firebase.auth().currentUser.uid
-
   newDocRef.set({
     alert_id: newDocRef.id,
     
@@ -45,9 +42,9 @@ const userId = firebase.auth().currentUser.uid
     alert_Current_AskPrice: askPrice,
     alert_Current_BidPrice: bidPrice,
     alert_Message: alertMessage,
-    alert_Currency_Pair:{ instrument: instrument},
+    alert_Currency_Pair:CurrencyPair,
     alert_Timestamp: timeStamp,
-    alert_Price: pricealert
+    alert_Price: alertPrice
   })
 
   .catch((error) => {
@@ -68,18 +65,30 @@ const userId = firebase.auth().currentUser.uid
    }
   }
 
-  function checkCondition() {
-    const askPrice = {...currency.data.prices[clickedindex].closeoutAsk}
-    const bidPrice = {...currency.data.prices[clickedindex].closeoutBid}
-    const MarketPrice = (askPrice + bidPrice )/2
 
-    
-    while(MarketPrice === pricealert || MarketPrice === pricealert)
-    {
-      Alert.alert("Price Alert", alertMessage)
+  useEffect (() => {
+    const interval = setInterval(() => {
+      const checkCondition = (alertPrice) =>  {
+      const MarketPrice = (askPrice + bidPrice )/2
+      let askPrice = ([...currency.data.prices[clickedindex].closeoutAsk].join('').toString())
+      let bidPrice =( [...currency.data.prices[clickedindex].closeoutBid].join('').toString())
+      let CurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
+        /*alerts.forEach(pricea => {
+          
+          
+        });*/
+        console.log(alerts)
+        
+        }
 
-    }
-  }
+checkCondition
+    }, 1000)
+  },[])
+   
+
+  
+  
+  
     //toast method that will be called when the ok button is called
     const showToastWithGravityAndOffset = () => {
       ToastAndroid.showWithGravityAndOffset(
@@ -115,8 +124,8 @@ return (
                 
                   <TextInput
                   style={styles.textInputStyle}
-                  value={pricealert}
-                  onChangeText = {(text) => setPricealert(text)}
+                  value={alertPrice}
+                  onChangeText = {(alertPrice) => setAlertPrice(alertPrice)}
                   placeholder="Alert Price"
                   placeholderTextColor="#60605e"
                   numeric
@@ -127,7 +136,7 @@ return (
                   <TextInput
                   style={styles.messageStyle}
                   value={alertMessage}
-                  onChangeText = {(text) => setalertMessage(text)}
+                  onChangeText = {(alertMessage) => setalertMessage(alertMessage)}
                   placeholder="Alert Message"
                   placeholderTextColor="#60605e"
                 />
@@ -140,7 +149,7 @@ return (
          
               <TouchableOpacity style={styles.button}
                onPress={() => {
-                 if(pricealert.length < 7 || pricealert.length > 7){
+                 if(alertPrice.length < 7 || alertPrice.length > 7){
                    Alert.alert("Error", "Input a valid price")
                    return ;
                  }
@@ -150,7 +159,7 @@ return (
                    return ;
                  }
                   addAlert();
-                  checkCondition();
+                  alerts.push({alertPrice})
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >
