@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react'
-import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroid,CheckBox, Alert } from 'react-native'
+import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroid, Alert } from 'react-native'
 import {ListItem, Card, Button, Icon} from 'react-native-elements'
 import { StackActions } from '@react-navigation/native';
 
@@ -20,36 +20,44 @@ function HomeScreen({navigation}) {
 //hook for the clicked currency pair
     const [clickedindex, setClickedIndex]  = useState(0)
 
-//Hooks for the alert inputs
-   const [alertPrice, setAlertPrice] = useState('')
-   const [alertMessage, setalertMessage] = useState('')
+//Hooks for the price Threshold
+   const [BuyThreshhold, setBuyThreshhold] = useState('')
+   const [SellThreshhold, setSellThreshhold] = useState('')
+
+   const [SMSMessage, setSMSMessage] = useState('')
    //Hook for storng the price alerts
    const [alerts, setAlerts] = useState([])
 
 // function for posting an alert to firebase
 function addAlert() {
-  let askPrice = ([...currency.data.prices[clickedindex].closeoutAsk].join('').toString())
-  let bidPrice =( [...currency.data.prices[clickedindex].closeoutBid].join('').toString())
-  let CurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
+  
 let timeStamp = firebase.firestore.FieldValue.serverTimestamp()
 let newDocRef = firebase.firestore().collection("Alerts").doc()
-
 const userId = firebase.auth().currentUser.uid
-  newDocRef.set({
-    alert_id: newDocRef.id,
-    
-    alert_User_id : userId,
-    alert_Current_AskPrice: askPrice,
-    alert_Current_BidPrice: bidPrice,
-    alert_Message: alertMessage,
-    alert_Currency_Pair:CurrencyPair,
-    alert_Timestamp: timeStamp,
-    alert_Price: alertPrice
-  })
 
+const SMSref = firebase.firestore().collection('SMS').doc()
+
+
+  newDocRef.set({
+    Alert_id: newDocRef.id,
+    Alert_User_id : userId,
+    alert_Timestamp: timeStamp,
+    Alert_SMS_Id: SMSref.id,
+    Alert_Limit_Id: Limit_id
+    
+  })
   .catch((error) => {
     console.log(error)
   })
+}
+
+function addSMS(){
+  const SMSDoc = firebase.firestore().collection("SMS").doc()
+  let Message = SMSMessage
+  SMSDoc.set({
+    SMS_Id: SMSDoc.id,
+    SMS_Message: Message
+  }) 
 }
 
 
@@ -66,30 +74,9 @@ const userId = firebase.auth().currentUser.uid
   }
 
 
-  useEffect (() => {
-    const interval = setInterval(() => {
-      const checkCondition = (alertPrice) =>  {
-      const MarketPrice = (askPrice + bidPrice )/2
-      let askPrice = ([...currency.data.prices[clickedindex].closeoutAsk].join('').toString())
-      let bidPrice =( [...currency.data.prices[clickedindex].closeoutBid].join('').toString())
-      let CurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
-        /*alerts.forEach(pricea => {
-          
-          
-        });*/
-        console.log(alerts)
-        
-        }
-
-checkCondition
-    }, 1000)
-  },[])
-   
-
-  
-  
-  
-    //toast method that will be called when the ok button is called
+      
+ 
+    //toast method that will be called when the ok button is clicked
     const showToastWithGravityAndOffset = () => {
       ToastAndroid.showWithGravityAndOffset(
         "Alert created successfully",
@@ -121,12 +108,20 @@ return (
               <View style={{ flexDirection: "row"}}>
                 <View style={styles.inputWrap}>
 
-                
                   <TextInput
                   style={styles.textInputStyle}
-                  value={alertPrice}
-                  onChangeText = {(alertPrice) => setAlertPrice(alertPrice)}
-                  placeholder="Alert Price"
+                  value={BuyThreshhold}
+                  onChangeText = {(BuyThreshhold) => setBuyThreshhold(BuyThreshhold)}
+                  placeholder="BuyThreshhold"
+                  placeholderTextColor="#60605e"
+                  numeric
+                  keyboardType='decimal-pad'	
+                />
+                 <TextInput
+                  style={styles.textInputStyle}
+                  value={SellThreshhold}
+                  onChangeText = {(SellThreshhold) => setSellThreshhold(SellThreshhold)}
+                  placeholder="Sell Threshhold"
                   placeholderTextColor="#60605e"
                   numeric
                   keyboardType='decimal-pad'	
@@ -135,8 +130,8 @@ return (
 
                   <TextInput
                   style={styles.messageStyle}
-                  value={alertMessage}
-                  onChangeText = {(alertMessage) => setalertMessage(alertMessage)}
+                  value={SMSMessage}
+                  onChangeText = {(SMSMessage) => setSMSMessage(SMSMessage)}
                   placeholder="Alert Message"
                   placeholderTextColor="#60605e"
                 />
@@ -149,17 +144,16 @@ return (
          
               <TouchableOpacity style={styles.button}
                onPress={() => {
-                 if(alertPrice.length < 7 || alertPrice.length > 7){
-                   Alert.alert("Error", "Input a valid price")
-                   return ;
-                 }
-                 if(alertMessage.length === 0)
+                 
+                 if(SMSMessage.length === 0)
                  {
                    Alert.alert("Incomplete", "Enter your Alert Message")
                    return ;
                  }
-                  addAlert();
-                  alerts.push({alertPrice})
+                 // addAlert();
+                  
+                
+                  //checkCondition(alertPrice)
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >
@@ -180,7 +174,10 @@ return (
         </Card>
 
         <View>
-            {currency.data.prices && currency.data.prices.map((prices, index) => {
+          
+            {
+            // Mapping of the actual currency pairs and their ask and bid prices respectively
+            currency.data.prices && currency.data.prices.map((prices, index) => {
                 return (
       <ListItem
         key={index}
