@@ -51,10 +51,9 @@ export default function MainStackNavigation(){
         { user ? (
           <>
           <Stack.Screen name="Home">
-            {props => <HomeScreen {...props} extraData={user} />}
+            {props => <HomeScreen {...props}extraData={user}/>}
           </Stack.Screen>
          <Stack.Screen name="AlertScreen" component={AlertScreen}/>
-         
 </>
         ) : (
           <>

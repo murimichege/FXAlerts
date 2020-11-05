@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center'
+        alignItems: 'center',
     },
    
     formContainer: {
@@ -44,41 +44,29 @@ export default StyleSheet.create({
     },
     textInputStyle: {
         borderColor: 'transparent',
-        elevation: 1,
         height: 40,
-        width: 100,
-        justifyContent: "flex-start",
+        width: 150,
         paddingLeft: 15,
+        paddingRight: 20,
         backgroundColor: 'lightgrey',
         padding: 4,
+        justifyContent: "center",
+        paddingBottom: 4,
         borderRadius: 5
 
     
     },
     messageStyle: {
         borderColor: 'transparent',
-        justifyContent: "center",
-        elevation: 1,
         height: 100,
         width: 200,
-        justifyContent: "space-between",
+        justifyContent: "center",
         paddingLeft: 15,
         backgroundColor: 'lightgrey',
-        padding: 4,
-        borderRadius: 5,
-        marginTop: 10
+        padding: 2,
+        borderRadius: 5
 
     },
-    checkboxContainer: {
-        flexDirection: "row",
-        marginBottom: 20,
-      },
-      checkbox: {
-        alignSelf: "center",
-      },
-      label: {
-        margin: 8,
-      },
       modal: {
           alignItems: "center"
       },
