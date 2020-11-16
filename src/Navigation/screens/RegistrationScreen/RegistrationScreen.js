@@ -33,12 +33,12 @@ export default function RegistrationScreen({navigation}) {
                     user_phonenumber: phonenumber,
                     user_password: password
                 };
-                const usersRef = firebase.firestore().collection('USERS')
+                const usersRef = firebase.firestore().collection('users')
                 usersRef
                     .doc(uid)
                     .set(data)
                     .then(() => {
-                        navigation.navigate('HomeScreen')
+                        navigation.navigate('Home', {user: data})
                     })
                     .catch((error) => {
                         alert(error)

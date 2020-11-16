@@ -26,13 +26,13 @@ function HomeScreen({navigation}) {
     );
 
 //Hooks for the price Threshold text inputs
-   const [BuyThreshhold, setBuyThreshhold] = useState('')
-   const [SellThreshhold, setSellThreshhold] = useState('')
+   const [BuyThreshold, setBuyThreshhold] = useState('')
+   const [SellThreshold, setSellThreshhold] = useState('')
    const [SMSMessage, setSMSMessage] = useState('')
    //Hook for storng the price alerts
-   const [alerts, setAlerts] = useState([])
 
- 
+
+
   function createAlert(){
     try {
       // adding of a currency pair to the db and referecing the api collection to the CURRENCY-PAIR COLLECTION
@@ -40,31 +40,29 @@ function HomeScreen({navigation}) {
       let bidPrice =( [...currency.data.prices[clickedindex].closeoutBid].join('').toString())
       let CurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
       const CurrencyPairDoc = firebase.firestore().collection("CURRENCY_PAIR").doc()
-      const APIDoc = firebase.firestore().collection("API").doc('sqBmmzATV1vHPC71XHKv')
+      const APIDocRef = firebase.firestore().collection("API").doc('sqBmmzATV1vHPC71XHKv')
       firebase.firestore().collection("CURRENCY_PAIR")
-      .where("Currency_API_Id", '==',APIDoc)
+      .where("Currency_API_Id",'==',APIDocRef)
       .get()
       CurrencyPairDoc.set({
         CurrencyPair_id: CurrencyPairDoc.id,
         CurrencyPair_Name: CurrencyPair,
         Currency_AskPrice: askPrice,
         Currency_BidPrice: bidPrice,
-        Currency_API_Id: APIDoc
+        Currency_API_Id: APIDocRef
       })
-      
-    
       // adding limit to the currency pair  collection and referencing the currency pair selected to it
-      const LimitDoc = firebase.firestore().collection("CURRENCY_PAIR_LIMITS").doc() 
-      const CurrencyPairDocRef  = firebase.firestore().collection('CURRENCY_PAIRS').doc(CurrencyPairDoc)
+      const LimitDoc = firebase.firestore().collection("CURRENCY_PAIR_LIMIT").doc() 
+      const CurrencyPairDocRef  = firebase.firestore().collection('CURRENCY_PAIR').doc(CurrencyPairDoc.id)
        firebase.firestore().collection("CURRENCY_PAIR_LIMIT")
         .where("Limit_Currency_Pair_Id", "==", CurrencyPairDocRef)
         .get()
         
         LimitDoc.set({
           Limit_id: LimitDoc.id,
-          Limit_Currenct_Pair_Id: CurrencyPairDocRef.id,   // make a document reference to this field
-          Limit_Buy_Price_Threshhold :  BuyThreshhold,
-          Limit_Sell_Price_Threshhold:  SellThreshhold
+          Limit_Currenct_Pair_Id: CurrencyPairDocRef,   // make a document reference to this field
+          Limit_Buy_Price_Threshhold :  BuyThreshold,
+          Limit_Sell_Price_Threshhold:  SellThreshold
     
         })
         // adding the created sms message to be sent to the user when the alert is triggered to the db
@@ -76,15 +74,15 @@ function HomeScreen({navigation}) {
       }) 
     
       // adding the alert to the alert collection while referencing the document to be used in the USERS, SMS and Limit
-      let timeStamp = firebase.firestore.FieldValue.serverTimestamp()
+      const timeStamp = firebase.firestore.FieldValue.serverTimestamp()
       let AlertsDoc = firebase.firestore().collection("Alerts").doc()
       const userId = firebase.auth().currentUser.uid
     
-     const SMSDocref = firebase.firestore().collection('SMS').doc(SMSDoc)
+     const SMSDocref = firebase.firestore().collection('SMS').doc(SMSDoc.id)
       firebase.firestore().collection("ALERTS")
       .where("Alert_SMS_Id", "==", SMSDocref)
       .get()
-     const LimitDocref = firebase.firestore().collection("CURRENCY_PAIR_LIMITS").doc(LimitDoc)
+     const LimitDocref = firebase.firestore().collection("CURRENCY_PAIR_LIMITS").doc(LimitDoc.id)
      firebase.firestore().collection("ALERTS")
      .where("Alert_Limit_Id", "==", LimitDocref)
      .get()
@@ -95,21 +93,14 @@ function HomeScreen({navigation}) {
         Alert_Timestamp: timeStamp,
         Alert_Status: false,
         Alert_User_id : userId,
-        Alert_SMS_Id: SMSDocref.id,
-        Alert_Limit_Id:LimitDocref.id
+        Alert_SMS_Id: SMSDocref,
+        Alert_Limit_Id:LimitDocref
         
       })    
     } catch (error) {
       console.log(error)
     }
-   
-
-
   }
-
-
-
-
 /* async function logOut() {
    try {
     await firebase.auth().signOut();
@@ -122,24 +113,48 @@ function HomeScreen({navigation}) {
   }*/
 
 function checkCondition({BuyThreshold, SellThreshold, SMSMessage}) {
-  let BuyingPrice = [...currency.data.prices[clickedindex].closeoutAsk]
-  let SellingPrice = [...currency.data.prices[clickedindex].closeoutBid]
-  let currencypair = [...currency.data.prices[clickedindex].instrument]
-  let BuyThreshholdarray = []
-  let SellThreshholdarray = []
+  const BuyingPrice = {...currency.data.prices[clickedindex].closeoutAsk}
+  const SellingPrice = {...currency.data.prices[clickedindex].closeoutBid}
+  const currencypair = {...currency.data.prices.instrument}
+  const SelectedCurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
+  const BuyThresholdarray = []
+  const SellThreshholdarray =[]
+  BuyThresholdarray.push(SelectedCurrencyPair,BuyThreshold)
 
-  
+    for (let index = 0; index < BuyThresholdarray.length; index++) {
+      console.log(BuyThresholdarray[index])
+      console.log(BuyThresholdarray[0])
+      const interval = setInterval(() => {
 
-  
-  BuyThreshholdarray.push(...BuyThreshold, currencypair)
-  BuyThreshholdarray.forEach((element, index) => {
-    console.log(element, index)
+      if(BuyThresholdarray[0].length > 0)
+      {
+        if(BuyThresholdarray[1] >= BuyingPrice)
+        {
+          console.log(SMSMessage)
+        }
+        else{
+          console.log("Wait for the price to be reached ")
+        }
 
-  })
-  SellThreshholdarray.push(...SellThreshold, currencypair)
+      }
+      else{
+        console.log("Invalid Currency Pair")
+      }    
  
+
+
+   
+ }, 1000);
+    
+    }
+    
   
-}
+
+  
+    //console.log(BuyThresholdarray[i]);
+    
+  
+ }
       
  
     //toast method that will be called when the ok button is clicked
@@ -164,8 +179,7 @@ return (
               <View style={{margin: 10, backgroundColor: '#ffffff', padding: 30,flex: 1, borderRadius: 10}}>
                 <Text style={{textAlign: "center", fontWeight: "bold"}}>
                   Create Alert On: 
-                </Text>
-                               
+                </Text>          
                 <Text style={{textAlign: "center", fontWeight: "bold"}}>
                {currency.data.prices[clickedindex].instrument}
               </Text>
@@ -194,8 +208,8 @@ return (
             selectedValue === "BuyPrice" ? 
             <TextInput
                   style={styles.textInputStyle}
-                  value={BuyThreshhold}
-                  onChangeText = {(BuyThreshhold) => setBuyThreshhold(BuyThreshhold)}
+                  value={BuyThreshold}
+                  onChangeText = {(BuyThreshold) => setBuyThreshhold(BuyThreshold)}
                   placeholder="BuyThreshhold"
                   placeholderTextColor="#60605e"
                   numeric
@@ -204,7 +218,7 @@ return (
                 /> : 
                 <TextInput
                   style={styles.textInputStyle}
-                  value={SellThreshhold}
+                  value={SellThreshold}
                   onChangeText = {(SellThreshhold) => setSellThreshhold(SellThreshhold)}
                   placeholder="Sell Threshhold"
                   placeholderTextColor="#60605e"
@@ -232,23 +246,17 @@ return (
 
                 </View>
               </View>  
-
-                
-                 
-
-              
-              
               <View style={{flexDirection: "row", justifyContent: "center"}}>
                 <View>
                 <TouchableOpacity style={styles.button}
                onPress={() => {
-                 
                  if(SMSMessage.length === 0)
                  {
                    Alert.alert("Incomplete", "Enter your Alert Message")
                    return ;
                  }
                   createAlert();
+                  checkCondition({BuyThreshold, SellThreshold, SMSMessage});
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >
@@ -262,13 +270,6 @@ return (
 
                 </View>
                 </View>  
-
-
-         
-              
-             
-             
-             
               </View>
             </View>
           </Modal>
