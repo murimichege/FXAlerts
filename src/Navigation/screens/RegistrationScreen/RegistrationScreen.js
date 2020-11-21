@@ -27,7 +27,7 @@ export default function RegistrationScreen({navigation}) {
             .then((response) => {
                 const uid = response.user.uid
                 const data = {
-                    id: uid,
+                    user_id: uid,
                     user_email: email,
                     user_fullname:fullName,
                     user_phonenumber: phonenumber,

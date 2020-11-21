@@ -14,8 +14,9 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 
 function HomeScreen({navigation}) {
-
+// context instance
     const currency = useContext(CurrencyContext);
+    const instrument = useContext(CurrencyContext)
     //hook for the modal
     const [modalopen, setModalOpen] = useState(false)
 //hook for the clicked currency pair
@@ -29,11 +30,11 @@ function HomeScreen({navigation}) {
    const [BuyThreshold, setBuyThreshhold] = useState('')
    const [SellThreshold, setSellThreshhold] = useState('')
    const [SMSMessage, setSMSMessage] = useState('')
-   //Hook for storng the price alerts
+// Hook for the checkCondition function
+const[alertPrice, setAlertPrice] = useState(0)
 
 
-
-  function createAlert(){
+  function addAlerttoDB(){
     try {
       // adding of a currency pair to the db and referecing the api collection to the CURRENCY-PAIR COLLECTION
       let askPrice = ([...currency.data.prices[clickedindex].closeoutAsk].join('').toString())
@@ -101,7 +102,8 @@ function HomeScreen({navigation}) {
       console.log(error)
     }
   }
-/* async function logOut() {
+  
+async function logOut() {
    try {
     await firebase.auth().signOut();
     navigation.dispatch(
@@ -110,55 +112,37 @@ function HomeScreen({navigation}) {
    } catch (error) {
      console.log(error)
    }
-  }*/
+  }
 
-function checkCondition({BuyThreshold, SellThreshold, SMSMessage}) {
-  const BuyingPrice = {...currency.data.prices[clickedindex].closeoutAsk}
-  const SellingPrice = {...currency.data.prices[clickedindex].closeoutBid}
-  const currencypair = {...currency.data.prices.instrument}
-  const SelectedCurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
-  const BuyThresholdarray = []
-  const SellThreshholdarray =[]
-  BuyThresholdarray.push(SelectedCurrencyPair,BuyThreshold)
+ /* function checkCondition({BuyThreshold, SellThreshold,SMSMessage}) {
+    const SelectedCurrencyPair = {...currency.data.prices[clickedindex].instrument}
 
-    for (let index = 0; index < BuyThresholdarray.length; index++) {
-      console.log(BuyThresholdarray[index])
-      console.log(BuyThresholdarray[0])
-      const interval = setInterval(() => {
-
-      if(BuyThresholdarray[0].length > 0)
+   { 
+      Object.values(currency.data.prices)
+      .map((value) => (
+        console.log([{...value.instrument},{...value.closeoutAsk},{...value.closeoutBid}])
+       
+      ))
+      const thresholdArray = []
+      thresholdArray.push(SelectedCurrencyPair,BuyThreshold, SellThreshold)
+      for (let index = 0; index < thresholdArray.length; index++) {
+        console.log(thresholdArray[i])
+      if({...value.closeoutAsk} >= thresholdArray[1] && thresholdArray[0] == {...value.instrument})
       {
-        if(BuyThresholdarray[1] >= BuyingPrice)
-        {
-          console.log(SMSMessage)
-        }
-        else{
-          console.log("Wait for the price to be reached ")
-        }
-
+        console.log(SMSMessage)
+        //change update the alert status in the db to be true
+        // filter the currencypair and the respective buythreshold if the condition is met
+        
       }
-      else{
-        console.log("Invalid Currency Pair")
-      }    
- 
-
-
-   
- }, 1000);
-    
-    }
-    
-  
-
-  
-    //console.log(BuyThresholdarray[i]);
-    
-  
- }
+        
+      }
       
- 
-    //toast method that will be called when the ok button is clicked
-    const showToastWithGravityAndOffset = () => {
+     
+  }
+}*/
+  
+    //toast function that will be called when the ok button is clicked
+   function showToastWithGravityAndOffset(){
       ToastAndroid.showWithGravityAndOffset(
         "Alert created successfully",
         ToastAndroid.SHORT,
@@ -181,10 +165,13 @@ return (
                   Create Alert On: 
                 </Text>          
                 <Text style={{textAlign: "center", fontWeight: "bold"}}>
+                  <>
                {currency.data.prices[clickedindex].instrument}
+               </>
               </Text>
               <Text style={{textAlign: "center"}}>
               {currency.data.prices[clickedindex].closeoutAsk}/{currency.data.prices[clickedindex].closeoutBid}
+              
               </Text>
               
               <Card.Divider/>
@@ -250,13 +237,20 @@ return (
                 <View>
                 <TouchableOpacity style={styles.button}
                onPress={() => {
-                 if(SMSMessage.length === 0)
+                 
+                  if(SMSMessage.length === 0)
                  {
                    Alert.alert("Incomplete", "Enter your Alert Message")
+                   
                    return ;
+                   
                  }
-                  createAlert();
+               
+                
+      
+                 addAlerttoDB();
                   checkCondition({BuyThreshold, SellThreshold, SMSMessage});
+                  
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >
@@ -277,8 +271,8 @@ return (
             <Text style={{textAlign: "center"}}>
                 Welcome
             </Text>
-            <Button title="Sign Out" type="outline" />
-            <Button title="My Alerts"  onPress ={() =>navigation.navigate("AlertScreen") }/>
+            <Button title="Sign Out" type="outline" onPress = {() => logOut()} />
+            <Button title="My Alerts"  onPress ={() => navigation.navigate("AlertScreen") }/>
             
         </Card>
 
@@ -286,15 +280,15 @@ return (
           
             {
             // Mapping of the actual currency pairs and their ask and bid prices respectively
-            currency.data.prices && currency.data.prices.map((prices, index) => {
+            currency.data.prices && currency.data.prices.map((item, index) => {
                 return (
       <ListItem
         key={index}
-        onPress = {() => {setModalOpen(true);setClickedIndex(index);}} 
+        onPress = {() => {setModalOpen(true);setClickedIndex(index); }} 
         bottomDivider>
         <ListItem.Content>
             <ListItem.Title>
-            {currency.data.prices[index].instrument}        {currency.data.prices[index].closeoutAsk}         {currency.data.prices[index].closeoutBid}
+            {item.instrument}       {item.closeoutAsk}        {item.closeoutBid}
             </ListItem.Title>
         </ListItem.Content>
       </ListItem>     
