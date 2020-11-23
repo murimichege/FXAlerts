@@ -23,7 +23,7 @@ export default function LogInScreen({navigation}) {
                     .get()
                     .then(firestoreDocument => {
                         if (!firestoreDocument.exists) {
-                            alert("Invalid LogIn")
+                            //alert("Invalid LogIn")
                             return;
                         }
                         const user = firestoreDocument.data()

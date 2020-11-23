@@ -33,10 +33,7 @@ const CurrencyProvider =(props) => {
             setIsloading
         }}>
             {props.children}
-
-        </CurrencyContext.Provider>
-
-       
+        </CurrencyContext.Provider>  
     )
 }
 

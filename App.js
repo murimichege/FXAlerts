@@ -8,9 +8,7 @@ LogBox.ignoreAllLogs()
 const App = () => {
   return (
     <CurrencyProvider>
-    
-      <MainStackNavigation/>
-      
+      <MainStackNavigation/>  
     </CurrencyProvider>
 
   )

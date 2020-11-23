@@ -16,7 +16,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 function HomeScreen({navigation}) {
 // context instance
     const currency = useContext(CurrencyContext);
-    const instrument = useContext(CurrencyContext)
     //hook for the modal
     const [modalopen, setModalOpen] = useState(false)
 //hook for the clicked currency pair
@@ -30,15 +29,14 @@ function HomeScreen({navigation}) {
    const [BuyThreshold, setBuyThreshhold] = useState('')
    const [SellThreshold, setSellThreshhold] = useState('')
    const [SMSMessage, setSMSMessage] = useState('')
-// Hook for the checkCondition function
-const[alertPrice, setAlertPrice] = useState(0)
 
 
+// START OF FUNCTION DEFINITIONS
   function addAlerttoDB(){
     try {
       // adding of a currency pair to the db and referecing the api collection to the CURRENCY-PAIR COLLECTION
       let askPrice = ([...currency.data.prices[clickedindex].closeoutAsk].join('').toString())
-      let bidPrice =( [...currency.data.prices[clickedindex].closeoutBid].join('').toString())
+      let bidPrice =([...currency.data.prices[clickedindex].closeoutBid].join('').toString())
       let CurrencyPair =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
       const CurrencyPairDoc = firebase.firestore().collection("CURRENCY_PAIR").doc()
       const APIDocRef = firebase.firestore().collection("API").doc('sqBmmzATV1vHPC71XHKv')
@@ -84,6 +82,7 @@ const[alertPrice, setAlertPrice] = useState(0)
       .where("Alert_SMS_Id", "==", SMSDocref)
       .get()
      const LimitDocref = firebase.firestore().collection("CURRENCY_PAIR_LIMITS").doc(LimitDoc.id)
+
      firebase.firestore().collection("ALERTS")
      .where("Alert_Limit_Id", "==", LimitDocref)
      .get()
@@ -113,33 +112,56 @@ async function logOut() {
      console.log(error)
    }
   }
-
- /* function checkCondition({BuyThreshold, SellThreshold,SMSMessage}) {
-    const SelectedCurrencyPair = {...currency.data.prices[clickedindex].instrument}
-
-   { 
-      Object.values(currency.data.prices)
-      .map((value) => (
-        console.log([{...value.instrument},{...value.closeoutAsk},{...value.closeoutBid}])
-       
-      ))
-      const thresholdArray = []
-      thresholdArray.push(SelectedCurrencyPair,BuyThreshold, SellThreshold)
-      for (let index = 0; index < thresholdArray.length; index++) {
-        console.log(thresholdArray[i])
-      if({...value.closeoutAsk} >= thresholdArray[1] && thresholdArray[0] == {...value.instrument})
-      {
-        console.log(SMSMessage)
-        //change update the alert status in the db to be true
-        // filter the currencypair and the respective buythreshold if the condition is met
-        
-      }
-        
-      }
-      
+ useEffect(() => )
+ function checkCondition({BuyThreshold, SellThreshold,SMSMessage}) {
+    const SelectedCurrencyPair = [currency.data.prices[clickedindex].instrument]
+    const Buy = SelectedCurrencyPair.concat(BuyThreshold)
+    const thresholdArray = []
+    thresholdArray.push(Buy)
+   
      
-  }
-}*/
+       // console.log([{...value.instrument},{...value.closeoutAsk},{...value.closeoutBid}])
+     {
+        Object.values(currency.data.prices)
+        .map((value) => (
+          console.log([value.instrument,value.closeoutAsk,value.closeoutBid])
+         
+        )); 
+        
+        } /* setInterval(() => {
+        for (let index = 0; index < result.length; index++) {
+          console.log(result[index])
+           for (let index = 0; index < thresholdArray.length; index++) {
+  
+           console.log(thresholdArray[index])
+           if(result[index][1] >= thresholdArray[1] && (thresholdArray[0]) == result[index][0])
+           {
+             Alert.alert(SMSMessage)
+             //create a reference of the limitcollection
+             let AlertsDoc = firebase.firestore().collection("Alerts").doc()
+     
+             firebase.firestore().collection("CURRENCY_PAIR_LIMITS").doc()
+             .where(" Limit_Buy_Price_Threshhold", "==", BuyThreshold)
+             
+             
+             AlertsDoc.update({
+               Alert_Status: true
+             })
+             return true;
+        
+             } 
+            //where the Limit-Buythreshold is equal to the thresholdArray[1]
+             //change update the alert status in the db to be true
+             // filter the currencypair and the respective buythreshold if the condition is met
+     
+           }
+        
+         }
+         
+       }, 1000);
+       */
+     
+}
   
     //toast function that will be called when the ok button is clicked
    function showToastWithGravityAndOffset(){
@@ -151,7 +173,7 @@ async function logOut() {
         50
       );
     };
-  
+  // END OF FUNCTION DEFINITIONS
 return (
         <KeyboardAwareScrollView >
           <Modal
@@ -249,7 +271,7 @@ return (
                 
       
                  addAlerttoDB();
-                  checkCondition({BuyThreshold, SellThreshold, SMSMessage});
+              // checkCondition({BuyThreshold, SellThreshold, SMSMessage});
                   
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
