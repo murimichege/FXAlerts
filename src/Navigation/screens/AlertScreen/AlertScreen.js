@@ -41,16 +41,16 @@ export default function AlertScreen() {
                 You have no alerts set
             </Text> 
             :
-          alerts &&  alerts.map((item, i) => {
-                return (
+         alerts.map((item, i) => (
+               
                     
-                            <ListItem key={i} bottomDivider>
+                            <ListItem bottomDivider>
                             <ListItem.Content>
                                 <ListItem.Title>
-                                    {item. Limit_Currenct_Pair_Name}
+                                    {item.Limit_Currenct_Pair_Name}
                                 </ListItem.Title>
                                 <ListItem.Subtitle>
-                                    {item.Limit_Buy_Price_Threshhold}
+                                    {item.Limit_Buy_Price_Threshhold }
                                 </ListItem.Subtitle>   
                                
                                 <MaterialCommunityIcons
@@ -62,7 +62,7 @@ export default function AlertScreen() {
                             </ListItem.Content>
                         </ListItem>
                 )                     
-            } 
+         
             )
             
         }

@@ -122,9 +122,13 @@ getNumber()
 async function logOut() {
    try {
     await firebase.auth().signOut();
-    navigation.dispatch(
-      StackActions.popToTop()
-    );   
+  navigation.navigate({
+    index: 0,
+    routes: [{name:" LogInScreen"}]
+  }) 
+    
+
+
    } catch (error) {
      console.log(error)
    }
@@ -135,8 +139,11 @@ const result = (currency.data.prices)
 	.map((value) => (
 	 ([value.instrument,value.closeoutAsk,value.closeoutBid])
 	  )); 
-	 
-		  checkCondition.apply(null, result)
+	 for (let j = 0; j < result.length; j++) {
+    checkCondition.apply(null, result) ;
+     
+   }
+		 
 		
   
   function checkCondition({BuyThreshold,SellThreshold, SMSMessage}){
@@ -156,70 +163,40 @@ row.push(SMSMessage);
 
 // insert the row
 myStack.push(row)
-  for (let i=0;i<myStack.length;i++) {
+console.log(myStack[1])
     // console.log(myStack[i][1])
+    let interval = 1000
+    
     for (let j = 0; j < result.length; j++) {
-    //console.log(result[i]) // loops through and prints all the elements in the SelectedCurrencypair i.e: currencypair and Buythreshold
-    // check if there is a currency pair in the result array and if there is a equal currency pair
-    if (myStack[i][0] === result[j][0]  )  {
-       //second condition checks if there is a price in the result array in each loop is equal to the
-       // buy threshold in each iteration
-       const Buydiff = myStack[i][1]-result[j][1]
-       const Buydiff2 = myStack[i][1]-result[j][1]
+      for (let i = 0; i < myStack.length; i++) {
+        setTimeout(() => {
+          if( myStack[i][0] === result[j][0]){
+            const Buydiff = myStack[i][1]-result[j][1]
        const Selldiff = result[j][1]-myStack[i][2]
-       const Selldiff2 = result[j][1]-myStack[i][2]
-   
-       if ( myStack[i][1] === result[j][1] || (Math.abs(Buydiff) <= .00002)){
-         
-         Alert.alert(myStack[i][0],myStack[i][3])
-         const message = (myStack[i][0],myStack[i][3])
-        
+    
+            if ( myStack[i][1] === result[j][1] || ((Math.abs(Buydiff) <= .00002)|| (Math.abs(Buydiff) <= .00003
+          )) ){
+            Alert.alert(myStack[i][0],myStack[i][3])
+            
+          }
+          else if( myStack[i][2] === result[j][2] || (Math.abs(Selldiff) <= .00002))
+          {
+            Alert.alert(myStack[i][0], myStack[i][3])
+          }
+          else
+           {
+            console.log("Price not reached")
+          }
+          }
+          else{
+            console.log("Wrong currency pair")
+          }
+        }, i * interval)
+      }
+    }
+  }
+  
 
-         SmsAndroid.autoSend(
-          +254701684754,
-          JSON.stringify(message),
-          (fail) => {
-            console.log('Failed with this error: ' + fail);
-          },
-          (success) => {
-            console.log('SMS sent successfully');
-          },
-        );   
-   
-       //  SelectedCurrencyPair
-       //.filter(cp => )    
-       }
-   
-        else if( myStack[i][2] === result[j][2] || (Math.abs(Selldiff) >= .00002))
-   
-       {
-         Alert.alert(myStack[i][0], myStack[i][3])
-
-         SmsAndroid.autoSend(
-          +254701684754,
-          JSON.stringify(message),
-          (fail) => {
-            console.log('Failed with this error: ' + fail);
-          },
-          (success) => {
-            console.log('SMS sent successfully');
-          },
-        ); 
-       }
-       else
-        {
-         console.log("Price not reached")
-       }
-       continue;
-
-    } else {
-      console.log("wrong currency pair")
-    }    
-   }
-   
-   }
- 
-}
     //toast function that will be called when the ok button is clicked
    function showToastWithGravityAndOffset(){
       ToastAndroid.showWithGravityAndOffset(
@@ -277,7 +254,6 @@ return (
                   autoCorrect={false}
                   value={ BuyThreshold}
                   onChangeText = {(BuyThreshold) => setBuyThreshhold(BuyThreshold)}
-                  onSubmitEditing ={() => setBuyThreshhold({BuyThreshold: ""})}
                   placeholder="BuyThreshhold"
                   placeholderTextColor="#60605e"
                   numeric
@@ -323,18 +299,20 @@ return (
                   if(SMSMessage.length === 0)
                  {
                    Alert.alert("Incomplete", "Enter your Alert Message")
+                   if ((BuyThreshold && SellThreshold).length < 7 && (BuyThreshold && SellThreshold).length > 7){
+                     Alert.alert("Enter a valid Price")
+                   }
                    
                    return ;
                    
                  }
-                 setBuyThreshhold({BuyThreshold: ''})
-                 setSellThreshhold({SellThreshold: ''})
-                 setSMSMessage({SMSMessage: ''})
+                
                
                 
       
                  addAlerttoDB();
-			           checkCondition({BuyThreshold, SMSMessage, SellThreshold})
+                 checkCondition({BuyThreshold, SMSMessage, SellThreshold})
+                
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >
