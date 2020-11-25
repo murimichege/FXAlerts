@@ -2,6 +2,7 @@ import React, {useContext, useState, useEffect} from 'react'
 import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroid, Alert,Picker } from 'react-native'
 import {ListItem, Card, Button} from 'react-native-elements'
 import { StackActions } from '@react-navigation/native';
+import SmsAndroid from 'react-native-get-sms-android';
 
 
 //import CurrencyPair from '../../CurrencyPair'
@@ -24,14 +25,16 @@ function HomeScreen({navigation}) {
     const [selectedValue, setSelectedValue] = useState(
       "BuyPrice"
     );
-
+    // hook for clearing output after submiting
+    const [clearInput, setClearInput] = useState(false)
+ 
 //Hooks for the price Threshold text inputs
    const [BuyThreshold, setBuyThreshhold] = useState('')
    const [SellThreshold, setSellThreshhold] = useState('')
    const [SMSMessage, setSMSMessage] = useState('')
 
-
-// START OF FUNCTION DEFINITIONS
+ 
+  // START OF FUNCTION DEFINITIONS
   function addAlerttoDB(){
     try {
       // adding of a currency pair to the db and referecing the api collection to the CURRENCY-PAIR COLLECTION
@@ -56,10 +59,12 @@ function HomeScreen({navigation}) {
        firebase.firestore().collection("CURRENCY_PAIR_LIMIT")
         .where("Limit_Currency_Pair_Id", "==", CurrencyPairDocRef)
         .get()
-        
+        let CurrencyPairName =  ([...currency.data.prices[clickedindex].instrument].join('').toString())
+
         LimitDoc.set({
           Limit_id: LimitDoc.id,
-          Limit_Currenct_Pair_Id: CurrencyPairDocRef,   // make a document reference to this field
+          Limit_Currenct_Pair_Id: CurrencyPairDocRef, 
+          Limit_Currenct_Pair_Name: CurrencyPairName,      // make a document reference to this field
           Limit_Buy_Price_Threshhold :  BuyThreshold,
           Limit_Sell_Price_Threshhold:  SellThreshold
     
@@ -102,6 +107,18 @@ function HomeScreen({navigation}) {
     }
   }
   
+  useEffect(() => {
+    const getNumber = async() => {
+      const numberref = firebase.firestore().collection()
+      const snapshot = await numberref.get()
+      snapshot.forEach((doc) => {
+        setNumber(doc.data())
+
+      })
+
+    }
+getNumber()
+  },[])
 async function logOut() {
    try {
     await firebase.auth().signOut();
@@ -112,57 +129,97 @@ async function logOut() {
      console.log(error)
    }
   }
- useEffect(() => )
- function checkCondition({BuyThreshold, SellThreshold,SMSMessage}) {
-    const SelectedCurrencyPair = [currency.data.prices[clickedindex].instrument]
-    const Buy = SelectedCurrencyPair.concat(BuyThreshold)
-    const thresholdArray = []
-    thresholdArray.push(Buy)
+
+
+const result = (currency.data.prices)
+	.map((value) => (
+	 ([value.instrument,value.closeoutAsk,value.closeoutBid])
+	  )); 
+	 
+		  checkCondition.apply(null, result)
+		
+  
+  function checkCondition({BuyThreshold,SellThreshold, SMSMessage}){
+// printing all elements in the threshold array
+ 
+// initialize your stack
+const myStack=[];
+
+// create a new row
+const row = [];
+
+const SelectedCurrencyPair = currency.data.prices[clickedindex].instrument
+row.push(SelectedCurrencyPair);
+row.push(BuyThreshold);
+row.push(SellThreshold)
+row.push(SMSMessage);
+
+// insert the row
+myStack.push(row)
+  for (let i=0;i<myStack.length;i++) {
+    // console.log(myStack[i][1])
+    for (let j = 0; j < result.length; j++) {
+    //console.log(result[i]) // loops through and prints all the elements in the SelectedCurrencypair i.e: currencypair and Buythreshold
+    // check if there is a currency pair in the result array and if there is a equal currency pair
+    if (myStack[i][0] === result[j][0]  )  {
+       //second condition checks if there is a price in the result array in each loop is equal to the
+       // buy threshold in each iteration
+       const Buydiff = myStack[i][1]-result[j][1]
+       const Buydiff2 = myStack[i][1]-result[j][1]
+       const Selldiff = result[j][1]-myStack[i][2]
+       const Selldiff2 = result[j][1]-myStack[i][2]
    
-     
-       // console.log([{...value.instrument},{...value.closeoutAsk},{...value.closeoutBid}])
-     {
-        Object.values(currency.data.prices)
-        .map((value) => (
-          console.log([value.instrument,value.closeoutAsk,value.closeoutBid])
+       if ( myStack[i][1] === result[j][1] || (Math.abs(Buydiff) <= .00002)){
          
-        )); 
+         Alert.alert(myStack[i][0],myStack[i][3])
+         const message = (myStack[i][0],myStack[i][3])
         
-        } /* setInterval(() => {
-        for (let index = 0; index < result.length; index++) {
-          console.log(result[index])
-           for (let index = 0; index < thresholdArray.length; index++) {
-  
-           console.log(thresholdArray[index])
-           if(result[index][1] >= thresholdArray[1] && (thresholdArray[0]) == result[index][0])
-           {
-             Alert.alert(SMSMessage)
-             //create a reference of the limitcollection
-             let AlertsDoc = firebase.firestore().collection("Alerts").doc()
-     
-             firebase.firestore().collection("CURRENCY_PAIR_LIMITS").doc()
-             .where(" Limit_Buy_Price_Threshhold", "==", BuyThreshold)
-             
-             
-             AlertsDoc.update({
-               Alert_Status: true
-             })
-             return true;
-        
-             } 
-            //where the Limit-Buythreshold is equal to the thresholdArray[1]
-             //change update the alert status in the db to be true
-             // filter the currencypair and the respective buythreshold if the condition is met
-     
-           }
-        
-         }
-         
-       }, 1000);
-       */
-     
+
+         SmsAndroid.autoSend(
+          +254701684754,
+          JSON.stringify(message),
+          (fail) => {
+            console.log('Failed with this error: ' + fail);
+          },
+          (success) => {
+            console.log('SMS sent successfully');
+          },
+        );   
+   
+       //  SelectedCurrencyPair
+       //.filter(cp => )    
+       }
+   
+        else if( myStack[i][2] === result[j][2] || (Math.abs(Selldiff) >= .00002))
+   
+       {
+         Alert.alert(myStack[i][0], myStack[i][3])
+
+         SmsAndroid.autoSend(
+          +254701684754,
+          JSON.stringify(message),
+          (fail) => {
+            console.log('Failed with this error: ' + fail);
+          },
+          (success) => {
+            console.log('SMS sent successfully');
+          },
+        ); 
+       }
+       else
+        {
+         console.log("Price not reached")
+       }
+       continue;
+
+    } else {
+      console.log("wrong currency pair")
+    }    
+   }
+   
+   }
+ 
 }
-  
     //toast function that will be called when the ok button is clicked
    function showToastWithGravityAndOffset(){
       ToastAndroid.showWithGravityAndOffset(
@@ -217,11 +274,14 @@ return (
             selectedValue === "BuyPrice" ? 
             <TextInput
                   style={styles.textInputStyle}
-                  value={BuyThreshold}
+                  autoCorrect={false}
+                  value={ BuyThreshold}
                   onChangeText = {(BuyThreshold) => setBuyThreshhold(BuyThreshold)}
+                  onSubmitEditing ={() => setBuyThreshhold({BuyThreshold: ""})}
                   placeholder="BuyThreshhold"
                   placeholderTextColor="#60605e"
                   numeric
+                  
                   clearButtonMode='always'
                   keyboardType='decimal-pad'	
                 /> : 
@@ -267,12 +327,14 @@ return (
                    return ;
                    
                  }
+                 setBuyThreshhold({BuyThreshold: ''})
+                 setSellThreshhold({SellThreshold: ''})
+                 setSMSMessage({SMSMessage: ''})
                
                 
       
                  addAlerttoDB();
-              // checkCondition({BuyThreshold, SellThreshold, SMSMessage});
-                  
+			           checkCondition({BuyThreshold, SMSMessage, SellThreshold})
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
                   >

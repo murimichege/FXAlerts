@@ -11,7 +11,7 @@ const CurrencyProvider =(props) => {
     useEffect(() => {
         const interval = setInterval(() => {
             const fetchpairs = async() => {
-                const results = await axios.get('/v3/accounts/101-004-14328428-002/pricing?instruments=AUD_CAD%2CAUD_CHF%2CAUD_JPY%2CAUD_NZD%2CAUD_USD%2CCAD_CHF%2CCAD_JPY%2CCHF_JPY%2CEUR_AUD%2CEUR_CAD%2CEUR_CHF%2CEUR_GBP%2CEUR_NZD%2CEUR_USD%2CGBP_AUD%2CGBP_CAD%2CGBP_CHF%2CGBP_USD%2CGBP_JPY%2CNZD_CAD%2CNZD_CHF%2CNZD_JPY%2CUSD_CAD%2CUSD_JPY%2CUSD_CHF%2CXAU_USD%2CZAR_JPY%2CEUR_HUF%2CEUR_ZAR')
+                const results = await axios.get('/v3/accounts/101-004-14328428-002/pricing?instruments=AUD_CAD%2CAUD_CHF%2CAUD_NZD%2CAUD_USD%2CCAD_CHF%2CCAD_JPY%2CEUR_AUD%2CEUR_CAD%2CEUR_CHF%2CEUR_GBP%2CEUR_NZD%2CEUR_USD%2CGBP_AUD%2CGBP_CAD%2CGBP_CHF%2CGBP_USD%2CNZD_CAD%2CNZD_CHF%2CUSD_CAD%2CUSD_CHF%2CEUR_ZAR')
                 setData(results.data)
                 setIsloading(false)
             }
