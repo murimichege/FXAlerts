@@ -12,7 +12,7 @@ export default function RegistrationScreen({navigation}) {
     const [phonenumber, setPhoneNumber] = useState('')
 
     const onFooterLinkPress = () => {
-        navigation.navigate('LogInScreen')
+        navigation.navigate('LogIn')
     }
 
     const onRegisterPress = () => {

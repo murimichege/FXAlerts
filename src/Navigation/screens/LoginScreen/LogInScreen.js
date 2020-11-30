@@ -8,7 +8,7 @@ export default function LogInScreen({navigation}) {
     const [password, setPassword] = useState('')
 
     const onFooterLinkPress = () => {
-        navigation.navigate('RegistrationScreen')
+        navigation.navigate('Registration')
     }
 
     const onLoginPress = () => {

@@ -4,9 +4,10 @@ import { firebase } from '../firebase/config'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import LogInScreen from './screens/LoginScreen/LogInScreen'
-import HomeScreen from '../Navigation/screens/HomeScreen/HomeScreen'
+import CurrenciesScreen from './screens/CurrenciesScreen/CurrenciesScreen'
 import RegistrationScreen from '../Navigation/screens/RegistrationScreen/RegistrationScreen'
 import AlertScreen from '../Navigation/screens/AlertScreen/AlertScreen'
+import { CurrencyContext } from '../context/Context';
 
 
 
@@ -49,15 +50,15 @@ export default function MainStackNavigation(){
       <Stack.Navigator>
         { user ? (
           <>
-          <Stack.Screen name="Home">
-            {props => <HomeScreen {...props} extraData={user}/>}
+          <Stack.Screen name="My Alerts">
+            {props => <AlertScreen {...props} extraData={user}/>}
           </Stack.Screen>
-         <Stack.Screen name="AlertScreen" component={AlertScreen}/>
+         <Stack.Screen name="CurrencyPairs" component={CurrenciesScreen}/>
 </>
         ) : (
           <>
-            <Stack.Screen name="LogInScreen" component={LogInScreen} />
-            <Stack.Screen name="RegistrationScreen" component={RegistrationScreen} />
+            <Stack.Screen name="LogIn" component={LogInScreen} />
+            <Stack.Screen name="Registration" component={RegistrationScreen} />
           </>
         )}
       </Stack.Navigator>

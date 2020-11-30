@@ -1,72 +1,123 @@
-import React, {useEffect, useState} from 'react'
-import {ScrollView, ActivityIndicator, Text} from 'react-native'
+import React, {useEffect, useState, useLayoutEffect} from 'react'
+import {ScrollView, ActivityIndicator, Text, View, Button, TextComponent} from 'react-native'
 import { ListItem} from 'react-native-elements'
 import {firebase} from '../../../firebase/config'
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { NavigationActions } from 'react-navigation';
 
+//import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function AlertScreen() {
+import {
+    HeaderButtons,
+    HeaderButton,
+    Item
+  } from 'react-navigation-header-buttons';
+  
+
+export default function AlertScreen({navigation}) {
 
     const [alerts, setAlerts] = useState([])
-    
  
     useEffect(() => {
-        const fetchAlerts = async() => {
-            const db = firebase.firestore()
-            const data = await db.collection("CURRENCY_PAIR_LIMIT").get()
-            setAlerts(data.docs.map(doc => doc.data()))
-        }
-        fetchAlerts();
+    const fetchAlerts = () => {
+        const CurrencyPairref= firebase.firestore().collection("CURRENCY_PAIR")
+       const Limitref =    firebase.firestore().collection("CURRENCY_PAIR_LIMIT")
+  
+       Promise.all([Limitref.get(),CurrencyPairref.get() ])
+        // merge the results
+  .then(promiseResults => {
+      promiseResults.forEach( snapshot => {
+          setAlerts(snapshot.forEach( doc => (doc.data()) ))
+     })
+ 
+    
+    // return mergedData;
+  })
+  
+
+
+    }
+    fetchAlerts();
+        
 
     },[])
 
- 
-   function itemRemove({index, id}) {
-        const newAlerts = [...alerts];
-        newAlerts.splice(index, 1);
-        setAlerts(newAlerts);
-       /* const CurrencyRef = firebase.firestore().collection("CURRENCY_PAIR")
-        .doc(CurrencyRef.id).delete()
-        .then(() => console.log("Alert Deleted Successfully"))*/
-          }
+    
+  
+
+    async function logOut() {
+        try {
+         await firebase.auth().signOut();
+        const resetAction = NavigationActions.reset({
+         index: 0,
+         routes: [{name: "LogIn"}]
+       }) 
+       navigation.dispatch(resetAction)
+         
+        } catch (error) {
+          console.log(error)
+        }
+       }
+    const IoniconsHeaderButton = (props) => (
+        // the `props` here come from <Item ... />
+        // you may access them and pass something else to `HeaderButton` if you like
+        <HeaderButton IconComponent={Ionicons} iconSize={23}  {...props} />
+
+      );
+  useLayoutEffect(() => {
+      navigation.setOptions({
+          headerRight: () => (
+              <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+             <Item title="search" iconName="ios-add-circle" iconSize={30} onPress={() => navigation.navigate("CurrencyPairs")} />
+               <Item title="search" iconName="ios-log-out" iconSize={30} onPress={() => logOut()} />
+
+              </HeaderButtons>        
+          )
+      })
+  },[navigation])
+
+  function itemRemove({index, id}) {
+    const newAlerts = [...alerts];
+    newAlerts.splice(index, 1);
+    setAlerts(newAlerts);
+  const LimitDoc=  firebase.firestore().collection("CURRENCY_PAIR_LIMIT").doc()
+    firebase.firestore().collection("CURRENCY_PAIR_LIMIT").doc(LimitDoc.id).delete()
+      }
      
     return (
-    
-        <ScrollView>
+
+        <ScrollView >
             
         {
             
-            alerts.length === 0 ?
-            <Text style = {{textAlign: "center", justifyContent: "center"}}>
-                You have no alerts set
-            </Text> 
-            :
-         alerts.map((item, i) => (
+            
+           
+         alerts && alerts.map((item, i) => (
                
                     
-                            <ListItem bottomDivider>
+                            <ListItem key={i} bottomDivider>
                             <ListItem.Content>
                                 <ListItem.Title>
-                                    {item.Limit_Currenct_Pair_Name}
+                                    {item.Limit_Currency_Pair_Name}
                                 </ListItem.Title>
+                                
                                 <ListItem.Subtitle>
-                                    {item.Limit_Buy_Price_Threshhold }
+                                    
+                                 Buy_Threshold Price:   {item.Limit_Buy_Price_Threshhold}
                                 </ListItem.Subtitle>   
+                                <ListItem.Subtitle>
+                                 Sell_Threshold Price:   {item.Limit_Sell_Price_Threshhold}
+                                </ListItem.Subtitle>
+                                
                                
-                                <MaterialCommunityIcons
-                                name="delete"
-                               onPress={() =>itemRemove(i)}
-                                size={24}
-                                color="black"
-                                style={{position:"absolute", right: 3}}/> 
                             </ListItem.Content>
                         </ListItem>
                 )                     
-         
-            )
+         )
+            
             
         }
         </ScrollView>
-         
+
     )
 }
