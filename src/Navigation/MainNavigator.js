@@ -50,7 +50,7 @@ export default function MainStackNavigation(){
       <Stack.Navigator>
         { user ? (
           <>
-          <Stack.Screen name="My Alerts">
+          <Stack.Screen name="MyAlerts">
             {props => <AlertScreen {...props} extraData={user}/>}
           </Stack.Screen>
          <Stack.Screen name="CurrencyPairs" component={CurrenciesScreen}/>

@@ -4,6 +4,7 @@ import { ListItem} from 'react-native-elements'
 import {firebase} from '../../../firebase/config'
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationActions } from 'react-navigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -12,38 +13,34 @@ import {
     HeaderButton,
     Item
   } from 'react-navigation-header-buttons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import styles from '../CurrenciesScreen/styles';
   
 
 export default function AlertScreen({navigation}) {
 
-    const [alerts, setAlerts] = useState([])
+    const [alerts, setAlerts] = useState('')
  
-    useEffect(() => {
-    const fetchAlerts = () => {
-        const CurrencyPairref= firebase.firestore().collection("CURRENCY_PAIR")
-       const Limitref =    firebase.firestore().collection("CURRENCY_PAIR_LIMIT")
-  
-       Promise.all([Limitref.get(),CurrencyPairref.get() ])
-        // merge the results
-  .then(promiseResults => {
-      promiseResults.forEach( snapshot => {
-          setAlerts(snapshot.forEach( doc => (doc.data()) ))
-     })
- 
-    
-    // return mergedData;
-  })
-  
-
-
-    }
-    fetchAlerts();
-        
-
-    },[])
 
     
-  
+ useEffect(() => {
+getItems()
+ },[])
+ async function getItems() {
+
+  try {
+    const items =  await AsyncStorage.getItem('key');
+    if (items !== null) {
+      //console.log(JSON.parse(myArray));
+      setAlerts(JSON.parse(items))
+    }      
+  } catch (error) {
+    console.log(error)
+  }
+ }
+    
+      
+    
 
     async function logOut() {
         try {
@@ -76,47 +73,24 @@ export default function AlertScreen({navigation}) {
       })
   },[navigation])
 
-  function itemRemove({index, id}) {
-    const newAlerts = [...alerts];
-    newAlerts.splice(index, 1);
-    setAlerts(newAlerts);
-  const LimitDoc=  firebase.firestore().collection("CURRENCY_PAIR_LIMIT").doc()
-    firebase.firestore().collection("CURRENCY_PAIR_LIMIT").doc(LimitDoc.id).delete()
-      }
      
     return (
 
         <ScrollView >
-            
-        {
-            
-            
-           
-         alerts && alerts.map((item, i) => (
-               
-                    
-                            <ListItem key={i} bottomDivider>
-                            <ListItem.Content>
-                                <ListItem.Title>
-                                    {item.Limit_Currency_Pair_Name}
-                                </ListItem.Title>
-                                
-                                <ListItem.Subtitle>
-                                    
-                                 Buy_Threshold Price:   {item.Limit_Buy_Price_Threshhold}
-                                </ListItem.Subtitle>   
-                                <ListItem.Subtitle>
-                                 Sell_Threshold Price:   {item.Limit_Sell_Price_Threshhold}
-                                </ListItem.Subtitle>
-                                
-                               
-                            </ListItem.Content>
-                        </ListItem>
-                )                     
-         )
-            
-            
-        }
+          <ListItem>
+            <ListItem.Content>
+              <ListItem.Title>
+                {alerts}
+              </ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+
+<View style={{alignItems: "center"}}>
+<TouchableOpacity style={styles.button}>
+          <Text>Download PDF</Text>
+      </TouchableOpacity>
+</View>
+      
         </ScrollView>
 
     )

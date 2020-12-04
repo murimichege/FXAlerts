@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect, useLayoutEffect} from 'react'
 import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroid, Alert,Picker } from 'react-native'
 import {ListItem, Card, Button} from 'react-native-elements'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 //import CurrencyPair from '../../CurrencyPair'
@@ -152,18 +152,14 @@ getNumber()
   },[])*/
 
 
-
-
-
+  
 const result = (currency.data.prices)
 	.map((value) => (
 	 ([value.instrument,value.closeoutAsk,value.closeoutBid])
 	  )); 
-    checkCondition(...result) ;
     
 
-  function checkCondition({BuyThreshold,SellThreshold, SMSMessage}){
- 
+
 // initialize your stack
 const myStack=[];
 
@@ -178,40 +174,50 @@ row.push(SMSMessage);
 
 // insert the row
 myStack.push(row)
-//console.log(myStack[1])
-    // console.log(myStack[i][1])
+//console.log(myStack[0][1])
   for (let j = 0; j < result.length; j++) {
+    
     for (let i = 0; i < myStack.length; i++) {
-        if( myStack[i][0] === result[j][0]){
-          
-          const Buydiff = myStack[i][1]-result[j][1]
-          const Selldiff = result[j][1]-myStack[i][2]
+        if(result[j][0] == myStack[i][0]){  
 
-          if ( myStack[i][1] === result[j][1] || (Math.abs(Buydiff) <= .00002)
-        ) {
+          if (JSON.stringify(result[j][1]) >= JSON.stringify(myStack[i][1]) && JSON.stringify(result[j][1]).length === JSON.stringify(myStack[i][1]).length )  
 
-          
-          Alert.alert(myStack[i][0],myStack[i][3])
-          
-        }
-        else if( myStack[i][2] === result[j][2] || (Math.abs(Selldiff) <= .00002) )
-        {
-          Alert.alert(myStack[i][0], myStack[i][3])
-        }
-        else
+          {  
+           
+           Alert.alert(myStack[i][0],"Target Price has hit : " + myStack[i][1]) 
+
+
+           const items = []
+
+          items.push("CurrencyPair: ",myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
+
+           AsyncStorage.setItem('key', JSON.stringify(items))
+           navigation.navigate("MyAlerts")
+
+
+         
+
+         }
+         else if ((JSON.stringify(result[j][2]) <= JSON.stringify(myStack[i][2]) && JSON.stringify(result[j][2]).length === JSON.stringify(myStack[i][2]).length ))
          {
-          console.log("Price not reached")
-        }
-        }
-        else{
-          console.log("Wrong currency pair")
-        }
-    }
+          Alert.alert(myStack[i][0],"Target Price has hit : " + myStack[i][2]) 
+          navigation.navigate("MyAlerts")
+
+          break;
+
+         }
+         else
+          {
+           console.log("Price not reached")
+         }
+      }
+      else{
+        console.log("Wrong currency pair")
+      }
   }
- 
+
   }
   
-
   
     //toast function that will be called when the ok button is clicked
    function showToastWithGravityAndOffset(){
@@ -291,11 +297,15 @@ return (
                </>
               </Text>
               <Text style={{textAlign: "center"}}>
-              {currency.data.prices[clickedindex].closeoutAsk}/{currency.data.prices[clickedindex].closeoutBid}
+              Buying Price: {currency.data.prices[clickedindex].closeoutAsk}
               
               </Text>
               
               <Card.Divider/>
+              <Text style={{textAlign: "center"}}>
+              Selling Price:{currency.data.prices[clickedindex].closeoutBid}
+              
+              </Text>
 
               <View style={{justifyContent: "center", alignItems: "center"}}>
                 <View style={{ marginBottom: 10}}>
@@ -375,8 +385,7 @@ return (
                 
       
                  addAlerttoDB();
-                 checkCondition({BuyThreshold, SMSMessage, SellThreshold})
-                 navigation.navigate("My Alerts")
+                // navigation.navigate("MyAlerts")
                 
                   setModalOpen(false);
                   showToastWithGravityAndOffset();} }
