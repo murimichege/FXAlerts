@@ -189,7 +189,7 @@ myStack.push(row)
 
            const items = []
 
-          items.push("CurrencyPair: ",myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
+          items.push(myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
 
            AsyncStorage.setItem('key', JSON.stringify(items))
            navigation.navigate("MyAlerts")
