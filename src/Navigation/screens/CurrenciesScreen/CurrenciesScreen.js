@@ -173,7 +173,7 @@ row.push(SellThreshold)
 row.push(SMSMessage);
 
 // insert the row
-myStack.push(row)
+myStack.push([row])
 //console.log(myStack[0][1])
   for (let j = 0; j < result.length; j++) {
     

@@ -21,7 +21,7 @@ import styles from '../CurrenciesScreen/styles';
 
 export default function AlertScreen({navigation}) {
 
-    const [alerts, setAlerts] = useState('')
+    const [alerts, setAlerts] = useState()
  
 
     
@@ -71,10 +71,7 @@ getItems()
     console.log(error)
   }
  }
-   /* async function onDelete() {
-      setAlerts({key: ""})
-      await AsyncStorage.removeItem("key")
-    }*/
+    
  
      
     
@@ -127,7 +124,8 @@ getItems()
           <Text>Download PDF</Text>
       </TouchableOpacity>
     
-      
+    
+    
 </View>
       
         </ScrollView>
