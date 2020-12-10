@@ -213,23 +213,25 @@ myStack.push(row)
          else if ((JSON.stringify(result[j][2]) <= JSON.stringify(myStack[i][2]) && JSON.stringify(result[j][2]).length === JSON.stringify(myStack[i][2]).length ))
          {
           Alert.alert(myStack[i][0],"Target Price has hit : " + myStack[i][2]) 
-        /*  const alerts = []
+          const alerts = []
 
           alerts.push(myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
+          saveAlert(...alerts)
 
           
-          const existingalerts =  AsyncStorage.getItem('key')
-          .then(() =>{
+          async function saveAlert() {
+            const existingalerts = await AsyncStorage.getItem('key')
             if(existingalerts != null){
-              const updatedalerts = JSON.parse(existingalerts).append(alerts);
-               asyncStorage.setItem('key', JSON.stringify(updatedalerts))
+              const newarray = []
+              const updatedalerts = JSON.parse(existingalerts).concat(alerts);
+              newarray.push(updatedalerts)
+               AsyncStorage.setItem('key', JSON.stringify(newarray))
             }
             else{
                AsyncStorage.setItem('key', JSON.stringify(alerts))
             }
-
-          })
-          .catch((err) => console.log(err))*/
+            
+          }
          
           navigation.navigate("MyAlerts")
 

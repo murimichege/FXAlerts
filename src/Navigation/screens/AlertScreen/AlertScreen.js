@@ -73,6 +73,7 @@ export default function AlertScreen({navigation}) {
  }
  async function onDelete() {
    
+   
  }
     
  
