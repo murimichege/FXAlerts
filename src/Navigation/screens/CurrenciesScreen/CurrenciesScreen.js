@@ -152,7 +152,6 @@ getNumber()
   },[])*/
 
 
-  
 const result = (currency.data.prices)
 	.map((value) => (
 	 ([value.instrument,value.closeoutAsk,value.closeoutBid])
@@ -173,7 +172,7 @@ row.push(SellThreshold)
 row.push(SMSMessage);
 
 // insert the row
-myStack.push([row])
+myStack.push(row)
 //console.log(myStack[0][1])
   for (let j = 0; j < result.length; j++) {
     
@@ -189,9 +188,22 @@ myStack.push([row])
 
            const items = []
 
-          items.push(myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
+          items.push("Pair:",myStack[i][0]," Price", myStack[i][1], " Message ", myStack[i][3])
+          saveAlert(...items)
 
-           AsyncStorage.setItem('key', JSON.stringify(items))
+          async function saveAlert() {
+            const existingalerts = await AsyncStorage.getItem('key')
+            if(existingalerts != null){
+              const newarray = []
+              const updatedalerts = JSON.parse(existingalerts).concat(items);
+              newarray.push(updatedalerts)
+               AsyncStorage.setItem('key', JSON.stringify(newarray))
+            }
+            else{
+               AsyncStorage.setItem('key', JSON.stringify(items))
+            }
+            
+          }
            navigation.navigate("MyAlerts")
 
 
@@ -201,9 +213,26 @@ myStack.push([row])
          else if ((JSON.stringify(result[j][2]) <= JSON.stringify(myStack[i][2]) && JSON.stringify(result[j][2]).length === JSON.stringify(myStack[i][2]).length ))
          {
           Alert.alert(myStack[i][0],"Target Price has hit : " + myStack[i][2]) 
+        /*  const alerts = []
+
+          alerts.push(myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
+
+          
+          const existingalerts =  AsyncStorage.getItem('key')
+          .then(() =>{
+            if(existingalerts != null){
+              const updatedalerts = JSON.parse(existingalerts).append(alerts);
+               asyncStorage.setItem('key', JSON.stringify(updatedalerts))
+            }
+            else{
+               AsyncStorage.setItem('key', JSON.stringify(alerts))
+            }
+
+          })
+          .catch((err) => console.log(err))*/
+         
           navigation.navigate("MyAlerts")
 
-          break;
 
          }
          else
@@ -217,6 +246,9 @@ myStack.push([row])
   }
 
   }
+
+
+ 
   
   
     //toast function that will be called when the ok button is clicked

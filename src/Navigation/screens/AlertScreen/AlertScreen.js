@@ -21,12 +21,12 @@ import styles from '../CurrenciesScreen/styles';
 
 export default function AlertScreen({navigation}) {
 
-    const [alerts, setAlerts] = useState()
+    const [alerts, setAlerts] = useState([])
  
 
     
  useEffect(() => {
-getItems()
+     getItems()
  },[])
 
  async function execute() {
@@ -64,12 +64,15 @@ getItems()
     const items =  await AsyncStorage.getItem('key');
   
     if (items !== null) {
-      //console.log(JSON.parse(myArray));
-      setAlerts(JSON.parse(items))
+      const parseditems = JSON.parse(items)
+      setAlerts(parseditems)
     }      
   } catch (error) {
     console.log(error)
   }
+ }
+ async function onDelete() {
+   
  }
     
  
