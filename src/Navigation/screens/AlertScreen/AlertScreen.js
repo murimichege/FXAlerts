@@ -21,7 +21,7 @@ import styles from '../CurrenciesScreen/styles';
 
 export default function AlertScreen({navigation}) {
 
-    const [alerts, setAlerts] = useState([])
+    const [alerts, setAlerts] = useState('')
  
 
     
@@ -72,6 +72,13 @@ export default function AlertScreen({navigation}) {
   }
  }
  async function onDelete() {
+  try {
+    await AsyncStorage.clear();
+    setAlerts('')
+}
+catch(exception) {
+    return false;
+}
    
    
  }
@@ -127,7 +134,9 @@ export default function AlertScreen({navigation}) {
 <TouchableOpacity style={styles.button} onPress ={() => execute()}>
           <Text>Download PDF</Text>
       </TouchableOpacity>
-    
+      <TouchableOpacity style={styles.button} onPress ={() => onDelete()}>
+          <Text>Delete</Text>
+      </TouchableOpacity>
     
     
 </View>

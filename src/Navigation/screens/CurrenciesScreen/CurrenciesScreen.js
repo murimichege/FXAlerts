@@ -228,14 +228,13 @@ myStack.push(row)
                AsyncStorage.setItem('key', JSON.stringify(newarray))
             }
             else{
+              
                AsyncStorage.setItem('key', JSON.stringify(alerts))
             }
             
           }
          
           navigation.navigate("MyAlerts")
-
-
          }
          else
           {
