@@ -26,7 +26,9 @@ export default function AlertScreen({navigation}) {
 
     
  useEffect(() => {
-     getItems()
+   setInterval(() => {
+    getItems()
+   }, 1000);
  },[])
 
  async function execute() {

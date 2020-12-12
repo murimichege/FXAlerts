@@ -188,7 +188,7 @@ myStack.push(row)
 
            const items = []
 
-          items.push("Pair:",myStack[i][0]," Price", myStack[i][1], " Message ", myStack[i][3])
+          items.push("Pair:",myStack[i][0]," Price:", myStack[i][1], " Message:", myStack[i][3])
           saveAlert(...items)
 
           async function saveAlert() {
