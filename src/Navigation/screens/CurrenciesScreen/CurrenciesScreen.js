@@ -215,7 +215,7 @@ myStack.push(row)
           Alert.alert(myStack[i][0],"Target Price has hit : " + myStack[i][2]) 
           const alerts = []
 
-          alerts.push("Pair :",myStack[i][0],"Sell Price:", myStack[i][1], " Message ", myStack[i][3],"\n")
+          alerts.push("Pair :",myStack[i][0],"Sell Price:", myStack[i][2], " Message: ", myStack[i][3],"\n")
           saveAlert(...alerts)
 
           
