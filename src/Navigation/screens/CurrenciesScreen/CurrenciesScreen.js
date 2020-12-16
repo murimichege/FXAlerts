@@ -188,7 +188,7 @@ myStack.push(row)
 
            const items = []
 
-          items.push("Pair:",myStack[i][0]," Price:", myStack[i][1], " Message:", myStack[i][3])
+          items.push("Pair:",myStack[i][0]," BuyPrice:", myStack[i][1], " Message:", myStack[i][3],"\n")
           saveAlert(...items)
 
           async function saveAlert() {
@@ -215,7 +215,7 @@ myStack.push(row)
           Alert.alert(myStack[i][0],"Target Price has hit : " + myStack[i][2]) 
           const alerts = []
 
-          alerts.push(myStack[i][0]," ", myStack[i][1], "  ", myStack[i][3])
+          alerts.push("Pair :",myStack[i][0],"Sell Price:", myStack[i][1], " Message ", myStack[i][3],"\n")
           saveAlert(...alerts)
 
           
