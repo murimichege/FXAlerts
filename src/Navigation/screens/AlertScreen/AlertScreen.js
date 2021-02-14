@@ -5,8 +5,6 @@ import {firebase} from '../../../firebase/config'
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationActions } from 'react-navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
 
 //import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -31,33 +29,7 @@ export default function AlertScreen({navigation}) {
    }, 1000);
  },[])
 
- async function execute() {
-   const htmlitem = await AsyncStorage.getItem('key');
-   
-   const html = `<!DOCTYPE html>
-   <html lang="en">
-   <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Pdf Content</title>
-       <style>
-           body {
-               font-size: 16px;
-           }
-           h1 {
-               text-align: center;
-           }
-       </style>
-   </head>
-   <body>
-                 <h1>My Alerts</h1>
-       <h1>` + JSON.parse(htmlitem) +`</h1>
-   </body>
-   </html>
-`
-  const { uri } = await Print.printToFileAsync({ html });
-  Sharing.shareAsync(uri);
-}
+ 
  
 
  async function getItems() {
@@ -84,11 +56,6 @@ catch(exception) {
    
    
  }
-    
- 
-     
-    
-
     async function logOut() {
         try {
          await firebase.auth().signOut();
@@ -120,6 +87,7 @@ catch(exception) {
       })
   },[navigation])
 
+  
      
     return (
 

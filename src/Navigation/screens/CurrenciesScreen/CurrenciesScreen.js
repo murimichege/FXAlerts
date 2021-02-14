@@ -3,7 +3,8 @@ import { Text, View, ScrollView, TouchableOpacity, Modal, TextInput, ToastAndroi
 import {ListItem, Card, Button} from 'react-native-elements'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-
+import * as Notifications from 'expo-notifications'
+import * as Permissions from 'expo-permissions'
 //import CurrencyPair from '../../CurrencyPair'
 import {firebase} from '../../../firebase/config'
 import {CurrencyContext} from '../../../context/Context'
@@ -138,19 +139,70 @@ useLayoutEffect(() => {
     }
   }
   
- /* useEffect(() => {
-    const getNumber = async() => {
-      const numberref = firebase.firestore().collection()
-      const snapshot = await numberref.get()
-      snapshot.forEach((doc) => {
-        setNumber(doc.data())
+  useEffect(() => {
+  registerForPushNotificationsAsync()
+  },[])
 
-      })
-
+  const  sendPushNotification = async(token) => {
+    const message = {
+      to: token,
+      sound: 'default',
+      title: 'New Notification',
+      body: 'Have a nice day',
+      data: { data: 'goes here' },
+    };
+  
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  }
+  
+  const registerForPushNotificationsAsync = async() =>{
+    
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
     }
-getNumber()
-  },[])*/
+  
+    if(token){
+      const res =  await firebase.firestore()
+      .collection('users')
+      .doc(firebase.auth().currentUser.uid)
+      .set({token}, {merge:true})
+    }
+   
 
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  
+    return token;
+  }
 
 const result = (currency.data.prices)
 	.map((value) => (
